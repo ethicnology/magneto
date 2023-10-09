@@ -33,7 +33,10 @@ class _TorrentsState extends State<TorrentsPage> {
       body: ListView.builder(
         itemCount: torrents.length,
         itemBuilder: (context, index) {
-          return TorrentWidget(torrent: torrents[index]);
+          return TorrentWidget(
+            torrent: torrents[index],
+            transmission: widget.transmission,
+          );
         },
       ),
     );
