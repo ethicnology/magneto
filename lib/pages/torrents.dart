@@ -14,7 +14,8 @@ class TorrentsPage extends StatefulWidget {
 class _TorrentsState extends State<TorrentsPage> {
   var torrents = <Torrent>[];
 
-  getTorrents() async {
+  Future<void> getTorrents() async {
+    torrents = [];
     torrents = await widget.transmission.getTorrents();
     setState(() {});
   }
@@ -29,16 +30,36 @@ class _TorrentsState extends State<TorrentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Torrents'), automaticallyImplyLeading: false),
-      body: ListView.builder(
-        itemCount: torrents.length,
-        itemBuilder: (context, index) {
-          return TorrentWidget(
-            torrent: torrents[index],
-            transmission: widget.transmission,
-          );
-        },
+        title: const Text('Torrents'),
+        automaticallyImplyLeading: false,
       ),
+      body: RefreshIndicator(
+        onRefresh: getTorrents,
+        child: ListView.builder(
+          itemCount: torrents.length,
+          itemBuilder: (context, index) {
+            return TorrentWidget(
+              torrent: torrents[index],
+              transmission: widget.transmission,
+            );
+          },
+        ),
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+              onPressed: () {
+                // showBottomSheet(
+                //   context: context,
+                //   builder: (context) =>
+                //       AddTorrent(transmission: widget.transmission),
+                // );
+              },
+              child: const Icon(Icons.add)),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
