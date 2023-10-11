@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magnetic/widgets/add_torrent.dart';
 import 'package:magnetic/widgets/torrent.dart';
 import 'package:transmission/transmission.dart';
 
@@ -50,11 +51,13 @@ class _TorrentsState extends State<TorrentsPage> {
         children: [
           FloatingActionButton(
               onPressed: () {
-                // showBottomSheet(
-                //   context: context,
-                //   builder: (context) =>
-                //       AddTorrent(transmission: widget.transmission),
-                // );
+                Navigator.push<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) =>
+                        AddTorrent(transmission: widget.transmission),
+                  ),
+                );
               },
               child: const Icon(Icons.add)),
         ],
