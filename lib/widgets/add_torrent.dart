@@ -70,9 +70,9 @@ class _EditTorrentState extends State<AddTorrent> {
                         for (var file in _paths!) {
                           try {
                             var added = await widget.transmission.add(
-                              metaInfo: base64.encode(file.bytes!),
+                              metainfo: base64.encode(file.bytes!),
                             );
-                            addedTorrents.add((file.name, added.hash!));
+                            addedTorrents.add((file.name, added.hashString!));
                           } catch (e) {
                             addedTorrents.add((file.name, ''));
                             print(e);

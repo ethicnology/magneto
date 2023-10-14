@@ -31,39 +31,38 @@ class DataTile extends StatelessWidget {
     var boxWidth = width ?? (title.length * 11);
     var data = value.toString();
 
-    // Truncate the data value and add a tooltip if it's longer than the width
-    if (data.length > title.length) {
-      data = '${data.substring(0, title.length - 3)}…';
-    }
-
     return SizedBox(
       width: boxWidth,
       height: height,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              if (titleTooltip.isNotEmpty)
-                Tooltip(
-                  message: titleTooltip,
-                  child: Icon(titleIconTooltip, size: 16, color: Colors.blue),
-                ),
-              const SizedBox(width: 4),
-              Text(title),
-            ],
-          ),
-          Row(
-            children: [
-              if (valueTooltip.isNotEmpty)
-                Tooltip(
-                  message: valueTooltip,
-                  child: Icon(valueIconTooltip, size: 16, color: Colors.blue),
-                ),
-              const SizedBox(width: 4),
-              Text(data),
-            ],
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (titleTooltip.isNotEmpty)
+                  Tooltip(
+                    message: titleTooltip,
+                    child: Icon(titleIconTooltip, size: 16, color: Colors.blue),
+                  ),
+                const SizedBox(width: 4),
+                Text(title),
+              ],
+            ),
+            Row(
+              children: [
+                if (valueTooltip.isNotEmpty)
+                  Tooltip(
+                    message: valueTooltip,
+                    child: Icon(valueIconTooltip, size: 16, color: Colors.blue),
+                  ),
+                const SizedBox(width: 4),
+                Text(data),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

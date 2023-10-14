@@ -19,7 +19,7 @@ class _EditTorrentState extends State<EditTorrent> {
   @override
   void initState() {
     torrent = widget.torrent;
-    trackers.text = torrent.trackerList.join('\n');
+    trackers.text = torrent.trackerList?.join('\n') ?? '';
     super.initState();
   }
 
@@ -34,17 +34,16 @@ class _EditTorrentState extends State<EditTorrent> {
               controller: trackers,
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              //  TODO validator: ,
+              decoration: const InputDecoration(label: Text('trackers')),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await widget.transmission.setTorrents(args: {
-            'ids': [torrent.hash],
-            'trackerList': trackers.text.split('\n').join('\n\n')
-          });
+          await widget.transmission.set(
+              ids: [torrent.hashString!],
+              trackerList: trackers.text.split('\n'));
           if (!mounted) return;
           Navigator.pop(context);
         },
