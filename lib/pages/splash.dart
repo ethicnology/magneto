@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magnetic/memory.dart';
 import 'package:magnetic/pages/login.dart';
 import 'package:magnetic/pages/torrents.dart';
 import 'package:magnetic/models/preferences.dart';
@@ -27,17 +28,16 @@ class _SplashPageState extends State<SplashPage> {
     }
 
     if (host.isNotEmpty && username.isNotEmpty && password.isNotEmpty) {
+      transmission = Transmission(
+        baseUrl: host,
+        username: username,
+        password: password,
+      );
       if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => TorrentsPage(
-            transmission: Transmission(
-              baseUrl: host,
-              username: username,
-              password: password,
-            ),
-          ),
+          builder: (context) => const TorrentsPage(),
         ),
       );
     } else {

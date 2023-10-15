@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magnetic/memory.dart';
 import 'package:magnetic/pages/torrents.dart';
 import 'package:magnetic/models/preferences.dart';
 import 'package:transmission/transmission.dart';
@@ -56,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 var url = Uri.parse(host.text).resolve('/transmission/rpc');
 
-                var transmission = Transmission(
+                transmission = Transmission(
                     baseUrl: url.toString(),
                     username: username.text,
                     password: password.text);
@@ -72,8 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: ((context) =>
-                            TorrentsPage(transmission: transmission))));
+                        builder: ((context) => const TorrentsPage())));
               },
               child: const Text('Login'),
             ),

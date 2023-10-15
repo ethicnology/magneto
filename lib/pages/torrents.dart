@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:magnetic/memory.dart';
 import 'package:magnetic/utils.dart';
-import 'package:magnetic/widgets/add_torrent.dart';
+import 'package:magnetic/widgets/edit_torrent.dart';
 import 'package:magnetic/widgets/torrent_compact.dart';
 import 'package:transmission/transmission.dart';
 
 class TorrentsPage extends StatefulWidget {
-  final Transmission transmission;
-
-  const TorrentsPage({super.key, required this.transmission});
+  const TorrentsPage({super.key});
 
   @override
   State<TorrentsPage> createState() => _TorrentsState();
@@ -17,11 +15,16 @@ class TorrentsPage extends StatefulWidget {
 class _TorrentsState extends State<TorrentsPage> {
   var torrents = <Torrent>[];
   var filtered = <Torrent>[];
+  var selected = <String>[];
+  var actions = false;
+  var isSelecting = false;
+  var selectAll = false;
+  var localData = false;
   var name = '';
   Status? status;
 
   Future<void> getTorrents() async {
-    torrents = await widget.transmission.get();
+    torrents = await transmission.get();
     filtered = torrents;
     setState(() {});
   }
@@ -51,6 +54,16 @@ class _TorrentsState extends State<TorrentsPage> {
     return result;
   }
 
+  void select(Torrent torrent) {
+    var hash = torrent.hashString!;
+    if (selected.contains(hash)) {
+      selected.remove(hash);
+    } else {
+      selected.add(hash);
+    }
+    setState(() {});
+  }
+
   updateView() {
     if (status == null) filtered = torrents;
     if (status != null) filtered = filter(status!);
@@ -66,8 +79,9 @@ class _TorrentsState extends State<TorrentsPage> {
   @override
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 5), getTorrents);
-    updateView();
     directories = {for (var x in torrents) x.downloadDir!}.toList();
+    selectAll = selected.length == filtered.length;
+    updateView();
 
     if (torrents.isEmpty) {
       return const CircularProgressIndicator();
@@ -111,32 +125,178 @@ class _TorrentsState extends State<TorrentsPage> {
               ),
               onChanged: (value) => setState(() => name = value),
             ),
+            if (isSelecting)
+              Card(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Transform.scale(
+                      scale: 0.65,
+                      child: Switch(
+                        value: selectAll,
+                        activeColor: Colors.redAccent,
+                        onChanged: (bool value) {
+                          selectAll = !selectAll;
+                          if (selectAll) {
+                            selected = [for (var t in filtered) t.hashString!];
+                          } else {
+                            selected = [];
+                          }
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    const Text('All')
+                  ],
+                ),
+              ),
             Expanded(
               child: ListView.builder(
                 itemCount: filtered.length,
                 itemBuilder: (BuildContext ctx, int index) {
                   var torrent = filtered[index];
-                  return TorrentCompact(
-                    torrent: torrent,
-                    transmission: widget.transmission,
+                  var isSelected = selected.contains(torrent.hashString);
+                  return InkWell(
+                    onLongPress: () {
+                      isSelecting = !isSelecting;
+                      selected.clear();
+                      setState(() {});
+                    },
+                    onDoubleTap: () => isSelecting ? select(torrent) : null,
+                    child: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          if (isSelecting && isSelected)
+                            Transform.scale(
+                              scale: 0.65,
+                              child: Switch(
+                                  value: isSelected,
+                                  onChanged: (v) => select(torrent)),
+                            ),
+                          Expanded(
+                            child: TorrentCompact(torrent: torrent),
+                          )
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
             ),
           ]),
         ),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext ctx) =>
-                      AddTorrent(transmission: widget.transmission),
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (isSelecting && actions && selected.length == 1)
+              Card(
+                child: Column(
+                  children: [
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.info),
+                        color: Colors.blue),
+                    IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => EditTorrent(
+                              torrent: filtered.firstWhere((element) =>
+                                  element.hashString == selected.first),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.edit_square),
+                        color: Colors.white),
+                  ],
                 ),
-              );
-            },
-            child: const Icon(Icons.add)),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+              ),
+            if (isSelecting || actions)
+              Card(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      onPressed: () => transmission.start(ids: selected),
+                      icon: const Icon(Icons.play_circle),
+                      color: Colors.green,
+                    ),
+                    IconButton(
+                        onPressed: () => transmission.stop(ids: selected),
+                        icon: getIcon(Status.stopped, tooltip: false),
+                        color: Colors.amber),
+                    IconButton(
+                        onPressed: () => transmission.verify(ids: selected),
+                        icon: const Icon(Icons.verified),
+                        color: Colors.purpleAccent),
+                    IconButton(
+                        onPressed: () => transmission.reannounce(ids: selected),
+                        icon: const Icon(Icons.campaign),
+                        color: Colors.teal),
+                    IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return StatefulBuilder(
+                              builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return AlertDialog(
+                                  title: Text(
+                                      'Remove ${selected.length} torrents'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Row(
+                                        children: <Widget>[
+                                          Checkbox(
+                                            value: localData,
+                                            onChanged: (v) {
+                                              setState(
+                                                  () => localData = !localData);
+                                            },
+                                          ),
+                                          const Text('Delete Local Data'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        transmission.remove(
+                                          ids: selected,
+                                          deleteLocalData: localData,
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Remove ${selected.length}'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.remove_circle),
+                      color: Colors.redAccent,
+                    )
+                  ],
+                ),
+              ),
+            FloatingActionButton(
+              onPressed: () => setState(() => actions = !actions),
+              child: const Icon(Icons.attractions),
+            ),
+          ],
+        ),
       );
     }
   }

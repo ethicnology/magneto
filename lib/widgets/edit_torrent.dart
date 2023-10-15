@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:magnetic/memory.dart';
 import 'package:transmission/transmission.dart';
 
 class EditTorrent extends StatefulWidget {
-  final Transmission transmission;
   final Torrent torrent;
-  final List<String> directories;
-  const EditTorrent({
-    super.key,
-    required this.torrent,
-    required this.transmission,
-    required this.directories,
-  });
+  const EditTorrent({super.key, required this.torrent});
 
   @override
   State<EditTorrent> createState() => _EditTorrentState();
@@ -40,8 +34,8 @@ class _EditTorrentState extends State<EditTorrent> {
                 DropdownButton<String>(
                   value: location,
                   onChanged: (value) => setState(() => location = value!),
-                  items: widget.directories
-                      .map<DropdownMenuItem<String>>((String value) {
+                  items:
+                      directories.map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -95,9 +89,9 @@ class _EditTorrentState extends State<EditTorrent> {
         onPressed: () async {
           var ids = [torrent.hashString!];
           if (location != torrent.downloadDir) {
-            widget.transmission.move(ids: ids, location: location!, move: true);
+            transmission.move(ids: ids, location: location!, move: true);
           }
-          await widget.transmission.set(
+          await transmission.set(
             ids: ids,
             trackerList: widget.torrent.trackerList,
           );
