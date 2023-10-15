@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:magnetic/memory.dart';
 import 'package:magnetic/utils.dart';
+import 'package:magnetic/widgets/add_torrent.dart';
 import 'package:magnetic/widgets/edit_torrent.dart';
 import 'package:magnetic/widgets/torrent_compact.dart';
 import 'package:transmission/transmission.dart';
@@ -160,6 +161,7 @@ class _TorrentsState extends State<TorrentsPage> {
                     onLongPress: () {
                       isSelecting = !isSelecting;
                       selected.clear();
+                      if (isSelecting) select(torrent);
                       setState(() {});
                     },
                     onDoubleTap: () => isSelecting ? select(torrent) : null,
@@ -189,31 +191,9 @@ class _TorrentsState extends State<TorrentsPage> {
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (isSelecting && actions && selected.length == 1)
+            if ((isSelecting || actions) && selected.isNotEmpty)
               Card(
-                child: Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.info),
-                        color: Colors.blue),
-                    IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) => EditTorrent(
-                              torrent: filtered.firstWhere((element) =>
-                                  element.hashString == selected.first),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.edit_square),
-                        color: Colors.white),
-                  ],
-                ),
-              ),
-            if (isSelecting || actions)
-              Card(
+                color: Colors.black54,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -288,6 +268,47 @@ class _TorrentsState extends State<TorrentsPage> {
                       icon: const Icon(Icons.remove_circle),
                       color: Colors.redAccent,
                     )
+                  ],
+                ),
+              ),
+            if (isSelecting && actions && selected.length == 1)
+              Card(
+                color: Colors.black54,
+                child: Column(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => EditTorrent(
+                              torrent: filtered.firstWhere((element) =>
+                                  element.hashString == selected.first),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.edit_square),
+                        color: Colors.white),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.info),
+                        color: Colors.blue),
+                  ],
+                ),
+              ),
+            if (actions && selected.isEmpty)
+              Card(
+                color: Colors.black54,
+                child: Column(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => const AddTorrent(),
+                          );
+                        },
+                        icon: const Icon(Icons.add_circle),
+                        color: Colors.blue),
                   ],
                 ),
               ),

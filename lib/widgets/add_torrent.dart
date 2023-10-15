@@ -4,11 +4,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magnetic/memory.dart';
-import 'package:transmission/transmission.dart';
 
 class AddTorrent extends StatefulWidget {
-  final Transmission transmission;
-  const AddTorrent({super.key, required this.transmission});
+  const AddTorrent({super.key});
 
   @override
   State<AddTorrent> createState() => _EditTorrentState();
@@ -85,7 +83,7 @@ class _EditTorrentState extends State<AddTorrent> {
                       if (_paths != null) {
                         for (var file in _paths!) {
                           try {
-                            var added = await widget.transmission.add(
+                            var added = await transmission.add(
                               metainfo: base64.encode(file.bytes!),
                               downloadDir: downloadDir,
                             );
