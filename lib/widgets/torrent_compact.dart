@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magnetic/memory.dart';
 import 'package:magnetic/utils.dart';
 import 'package:magnetic/widgets/edit_torrent.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -85,6 +86,7 @@ class _TorrentCompactState extends State<TorrentCompact> {
                           context: context,
                           builder: (context) => EditTorrent(
                             torrent: torrent,
+                            directories: directories,
                             transmission: transmission,
                           ),
                         );

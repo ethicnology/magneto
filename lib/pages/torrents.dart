@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:magnetic/memory.dart';
 import 'package:magnetic/utils.dart';
 import 'package:magnetic/widgets/add_torrent.dart';
 import 'package:magnetic/widgets/torrent_compact.dart';
@@ -66,6 +67,7 @@ class _TorrentsState extends State<TorrentsPage> {
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 5), getTorrents);
     updateView();
+    directories = {for (var x in torrents) x.downloadDir!}.toList();
 
     if (torrents.isEmpty) {
       return const CircularProgressIndicator();
@@ -128,7 +130,7 @@ class _TorrentsState extends State<TorrentsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) =>
+                  builder: (BuildContext ctx) =>
                       AddTorrent(transmission: widget.transmission),
                 ),
               );

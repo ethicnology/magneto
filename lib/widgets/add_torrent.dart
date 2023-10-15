@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:magnetic/memory.dart';
 import 'package:transmission/transmission.dart';
 
 class AddTorrent extends StatefulWidget {
@@ -23,6 +24,7 @@ class _EditTorrentState extends State<AddTorrent> {
   List<PlatformFile>? _paths;
   bool _isLoading = false;
   bool _userAborted = false;
+  String? downloadDir;
 
   Future<void> _pickFiles() async {
     try {
@@ -52,6 +54,8 @@ class _EditTorrentState extends State<AddTorrent> {
 
   @override
   Widget build(BuildContext context) {
+    if (directories.isNotEmpty) downloadDir = directories.first;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Add torrents')),
       body: Form(
@@ -63,6 +67,18 @@ class _EditTorrentState extends State<AddTorrent> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                DropdownButton<String>(
+                  value: downloadDir,
+                  onChanged: (String? newValue) {
+                    setState(() => downloadDir = newValue!);
+                  },
+                  items: directories.map<DropdownMenuItem<String>>((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
                 ElevatedButton.icon(
                     onPressed: () async {
                       await _pickFiles();
@@ -71,6 +87,7 @@ class _EditTorrentState extends State<AddTorrent> {
                           try {
                             var added = await widget.transmission.add(
                               metainfo: base64.encode(file.bytes!),
+                              downloadDir: downloadDir,
                             );
                             addedTorrents.add((file.name, added.hashString!));
                           } catch (e) {
