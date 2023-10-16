@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magnetic/memory.dart';
+import 'package:freeleech/freeleech.dart';
 
 class AddTorrent extends StatefulWidget {
   const AddTorrent({super.key});
@@ -22,6 +23,7 @@ class _EditTorrentState extends State<AddTorrent> {
   List<PlatformFile>? _paths;
   bool _isLoading = false;
   bool _userAborted = false;
+  bool isLeech = false;
   String? downloadDir;
 
   Future<void> _pickFiles() async {
@@ -62,6 +64,12 @@ class _EditTorrentState extends State<AddTorrent> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             if (_isLoading) const CircularProgressIndicator(),
+            ListTile(
+              title: const Text('Freeleech'),
+              leading: Switch(
+                  value: isLeech,
+                  onChanged: (a) => setState(() => isLeech = !isLeech)),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -83,7 +91,7 @@ class _EditTorrentState extends State<AddTorrent> {
                       if (_paths != null) {
                         for (var file in _paths!) {
                           try {
-                            var added = await transmission.add(
+                            var added = await transmission.torrent.add(
                               metainfo: base64.encode(file.bytes!),
                               downloadDir: downloadDir,
                             );
@@ -93,6 +101,11 @@ class _EditTorrentState extends State<AddTorrent> {
                             print(e);
                           }
                         }
+                        var ids = [
+                          for (var t in addedTorrents)
+                            if (t.$2.isNotEmpty) t.$2
+                        ];
+                        if (isLeech) freeleech(transmission, ids);
                         setState(() {});
                       }
                     },

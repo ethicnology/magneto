@@ -30,16 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
   transmission:
-    path: ../dart-transmission
-    # git:
-    #   url: https://github.com/rarnis/transmission.git
-    #   ref: authentication
+    git:
+      url: https://github.com/ethicnology/dart-transmission
+      ref: main
+  freeleech:
+    path: ../freeleech
   shared_preferences: ^2.2.1
   file_picker: ^5.5.0
   percent_indicator: ^4.2.3
