@@ -25,7 +25,7 @@ class _TorrentsState extends State<TorrentsPage> {
   Status? status;
 
   Future<void> getTorrents() async {
-    torrents = await transmission.get();
+    torrents = await transmission.torrent.get();
     filtered = torrents;
     setState(() {});
   }
@@ -66,9 +66,11 @@ class _TorrentsState extends State<TorrentsPage> {
   }
 
   updateView() {
+    isSelecting = selected.isNotEmpty;
     if (status == null) filtered = torrents;
     if (status != null) filtered = filter(status!);
     if (name.isNotEmpty) filtered = search(filtered, name);
+    setState(() {});
   }
 
   @override
@@ -198,20 +200,24 @@ class _TorrentsState extends State<TorrentsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      onPressed: () => transmission.start(ids: selected),
+                      onPressed: () =>
+                          transmission.torrent.start(ids: selected),
                       icon: const Icon(Icons.play_circle),
                       color: Colors.green,
                     ),
                     IconButton(
-                        onPressed: () => transmission.stop(ids: selected),
+                        onPressed: () =>
+                            transmission.torrent.stop(ids: selected),
                         icon: getIcon(Status.stopped, tooltip: false),
                         color: Colors.amber),
                     IconButton(
-                        onPressed: () => transmission.verify(ids: selected),
+                        onPressed: () =>
+                            transmission.torrent.verify(ids: selected),
                         icon: const Icon(Icons.verified),
                         color: Colors.purpleAccent),
                     IconButton(
-                        onPressed: () => transmission.reannounce(ids: selected),
+                        onPressed: () =>
+                            transmission.torrent.reannounce(ids: selected),
                         icon: const Icon(Icons.campaign),
                         color: Colors.teal),
                     IconButton(
@@ -250,7 +256,7 @@ class _TorrentsState extends State<TorrentsPage> {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        transmission.remove(
+                                        transmission.torrent.remove(
                                           ids: selected,
                                           deleteLocalData: localData,
                                         );

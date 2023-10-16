@@ -55,16 +55,15 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                var url = Uri.parse(host.text).resolve('/transmission/rpc');
-
                 transmission = Transmission(
-                    baseUrl: url.toString(),
-                    username: username.text,
-                    password: password.text);
+                  url: host.text,
+                  username: username.text,
+                  password: password.text,
+                );
 
                 if (isSaveInSharedPreferences) {
                   Preferences.save({
-                    'host': url.toString(),
+                    'host': host.text,
                     'username': username.text,
                     'password': password.text,
                   });

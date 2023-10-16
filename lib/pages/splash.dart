@@ -29,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
 
     if (host.isNotEmpty && username.isNotEmpty && password.isNotEmpty) {
       transmission = Transmission(
-        baseUrl: host,
+        url: host,
         username: username,
         password: password,
       );

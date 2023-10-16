@@ -89,9 +89,10 @@ class _EditTorrentState extends State<EditTorrent> {
         onPressed: () async {
           var ids = [torrent.hashString!];
           if (location != torrent.downloadDir) {
-            transmission.move(ids: ids, location: location!, move: true);
+            transmission.torrent
+                .move(ids: ids, location: location!, move: true);
           }
-          await transmission.set(
+          await transmission.torrent.set(
             ids: ids,
             trackerList: widget.torrent.trackerList,
           );
