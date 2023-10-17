@@ -71,7 +71,8 @@ class _TorrentsState extends State<TorrentsPage> {
     if (status == null) filtered = torrents;
     if (status != null) filtered = filter(status!);
     if (name.isNotEmpty) filtered = search(filtered, name);
-    setState(() {});
+    directories = {for (var x in torrents) x.downloadDir!}.toList();
+    selectAll = selected.length == filtered.length;
   }
 
   @override
@@ -82,9 +83,6 @@ class _TorrentsState extends State<TorrentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 5), getTorrents);
-    directories = {for (var x in torrents) x.downloadDir!}.toList();
-    selectAll = selected.length == filtered.length;
     updateView();
 
     if (torrents.isEmpty) {
