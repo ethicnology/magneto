@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:magnetic/memory.dart';
 import 'package:magnetic/utils.dart';
-import 'package:magnetic/widgets/add_torrent.dart';
-import 'package:magnetic/widgets/edit_torrent.dart';
+import 'package:magnetic/widgets/actions_many.dart';
+import 'package:magnetic/widgets/actions_none.dart';
+import 'package:magnetic/widgets/actions_solo.dart';
 import 'package:magnetic/widgets/torrent_compact.dart';
 import 'package:transmission/transmission.dart';
 
@@ -193,131 +194,14 @@ class _TorrentsState extends State<TorrentsPage> {
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if ((isSelecting || actions) && selected.isNotEmpty)
-              Card(
-                color: Colors.black54,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      onPressed: () =>
-                          transmission.torrent.start(ids: selected),
-                      icon: const Icon(Icons.play_circle),
-                      color: Colors.green,
-                    ),
-                    IconButton(
-                        onPressed: () =>
-                            transmission.torrent.stop(ids: selected),
-                        icon: getIcon(Status.stopped, tooltip: false),
-                        color: Colors.amber),
-                    IconButton(
-                        onPressed: () =>
-                            transmission.torrent.verify(ids: selected),
-                        icon: const Icon(Icons.verified),
-                        color: Colors.purpleAccent),
-                    IconButton(
-                        onPressed: () =>
-                            transmission.torrent.reannounce(ids: selected),
-                        icon: const Icon(Icons.campaign),
-                        color: Colors.teal),
-                    IconButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return StatefulBuilder(
-                              builder:
-                                  (BuildContext context, StateSetter setState) {
-                                return AlertDialog(
-                                  title: Text(
-                                      'Remove ${selected.length} torrents'),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Row(
-                                        children: <Widget>[
-                                          Checkbox(
-                                            value: localData,
-                                            onChanged: (v) {
-                                              setState(
-                                                  () => localData = !localData);
-                                            },
-                                          ),
-                                          const Text('Delete Local Data'),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        transmission.torrent.remove(
-                                          ids: selected,
-                                          deleteLocalData: localData,
-                                        );
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Remove ${selected.length}'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                      icon: const Icon(Icons.remove_circle),
-                      color: Colors.redAccent,
-                    )
-                  ],
-                ),
-              ),
+            if ((isSelecting && actions) && selected.isNotEmpty)
+              ActionsMany(ids: selected),
             if (isSelecting && actions && selected.length == 1)
-              Card(
-                color: Colors.black54,
-                child: Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) => EditTorrent(
-                              torrent: filtered.firstWhere((element) =>
-                                  element.hashString == selected.first),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.edit_square),
-                        color: Colors.white),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.info),
-                        color: Colors.blue),
-                  ],
-                ),
+              ActionsSolo(
+                torrent:
+                    filtered.firstWhere((t) => t.hashString == selected.first),
               ),
-            if (actions && selected.isEmpty)
-              Card(
-                color: Colors.black54,
-                child: Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) => const AddTorrent(),
-                          );
-                        },
-                        icon: const Icon(Icons.add_circle),
-                        color: Colors.blue),
-                  ],
-                ),
-              ),
+            if (actions && selected.isEmpty) const ActionsNone(),
             FloatingActionButton(
               onPressed: () => setState(() => actions = !actions),
               child: const Icon(Icons.attractions),
