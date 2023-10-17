@@ -178,7 +178,10 @@ class _TorrentsState extends State<TorrentsPage> {
                   var torrent = filtered[index];
                   var isSelected = selected.contains(torrent.hashString);
                   return InkWell(
-                    onDoubleTap: () => select(torrent),
+                    onDoubleTap: () {
+                      actions = true;
+                      select(torrent);
+                    },
                     child: SizedBox(
                       width: 100,
                       child: Row(
@@ -204,17 +207,27 @@ class _TorrentsState extends State<TorrentsPage> {
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if ((isSelecting && actions) && selected.isNotEmpty)
-              ActionsMany(ids: selected),
-            if (isSelecting && actions && selected.length == 1)
-              ActionsSolo(
-                torrent:
-                    filtered.firstWhere((t) => t.hashString == selected.first),
-              ),
-            if (actions && selected.isEmpty) const ActionsNone(),
+            AnimatedOpacity(
+              opacity: actions ? 1 : 0,
+              duration: const Duration(seconds: 1),
+              child: actions
+                  ? Column(
+                      children: [
+                        if ((isSelecting && actions) && selected.isNotEmpty)
+                          ActionsMany(ids: selected),
+                        if (isSelecting && actions && selected.length == 1)
+                          ActionsSolo(
+                            torrent: filtered.firstWhere(
+                                (t) => t.hashString == selected.first),
+                          ),
+                        if (actions && selected.isEmpty) const ActionsNone(),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
             FloatingActionButton(
               onPressed: () => setState(() => actions = !actions),
-              child: const Icon(Icons.attractions),
+              child: const Icon(Icons.apps),
             ),
           ],
         ),
