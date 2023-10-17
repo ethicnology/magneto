@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:magnetic/memory.dart';
+import 'package:magnetic/models/preferences.dart';
 import 'package:magnetic/utils.dart';
 import 'package:magnetic/widgets/actions_many.dart';
 import 'package:magnetic/widgets/actions_none.dart';
@@ -25,7 +27,12 @@ class _TorrentsState extends State<TorrentsPage> {
   var name = '';
   Status? status;
 
-  Future<void> getTorrents() async {
+  Future<void> refreshTorrents() async {
+    var connected = await testConnection(transmission);
+
+    if (!mounted) return;
+    if (connected == false) Navigator.pop(context);
+
     torrents = await transmission.torrent.get();
     filtered = torrents;
     setState(() {});
@@ -77,7 +84,7 @@ class _TorrentsState extends State<TorrentsPage> {
 
   @override
   void initState() {
-    getTorrents();
+    refreshTorrents();
     super.initState();
   }
 
@@ -86,13 +93,25 @@ class _TorrentsState extends State<TorrentsPage> {
     updateView();
 
     if (torrents.isEmpty) {
-      return const CircularProgressIndicator();
+      return const Center(child: CircularProgressIndicator());
     } else {
       return Scaffold(
         appBar: AppBar(
-            title: const Text('Torrents'), automaticallyImplyLeading: false),
+          title: const Text('Torrents'),
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              onPressed: () {
+                Preferences.clear();
+                SystemNavigator.pop(animated: true);
+              },
+              icon: const Icon(Icons.logout),
+              color: Colors.red,
+            )
+          ],
+        ),
         body: RefreshIndicator(
-          onRefresh: getTorrents,
+          onRefresh: refreshTorrents,
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

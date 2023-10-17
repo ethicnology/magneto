@@ -48,3 +48,14 @@ Widget getIcon(
     return SizedBox(width: width, height: height, child: child);
   }
 }
+
+Future<bool> testConnection(Transmission transmission) async {
+  try {
+    var session = await transmission.session.get();
+    print(session.toJson());
+    return true;
+  } catch (e) {
+    print('connection failed: $e');
+    return false;
+  }
+}

@@ -3,6 +3,7 @@ import 'package:magnetic/memory.dart';
 import 'package:magnetic/pages/login.dart';
 import 'package:magnetic/pages/torrents.dart';
 import 'package:magnetic/models/preferences.dart';
+import 'package:magnetic/utils.dart';
 import 'package:transmission/transmission.dart';
 
 class SplashPage extends StatefulWidget {
@@ -33,13 +34,26 @@ class _SplashPageState extends State<SplashPage> {
         username: username,
         password: password,
       );
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const TorrentsPage(),
-        ),
-      );
+
+      var connection = await testConnection(transmission);
+      if (connection) {
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TorrentsPage(),
+          ),
+        );
+      } else {
+        Preferences.clear();
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          ),
+        );
+      }
     } else {
       if (!mounted) return;
       Navigator.push(
@@ -54,7 +68,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     loadSharedPreferences();
-
     super.initState();
   }
 

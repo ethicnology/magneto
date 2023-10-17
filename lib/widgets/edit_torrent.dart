@@ -34,8 +34,7 @@ class _EditTorrentState extends State<EditTorrent> {
                 DropdownButton<String>(
                   value: location,
                   onChanged: (value) => setState(() => location = value!),
-                  items:
-                      directories.map<DropdownMenuItem<String>>((String value) {
+                  items: directories.map<DropdownMenuItem<String>>((value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),

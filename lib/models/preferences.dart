@@ -20,4 +20,9 @@ class Preferences {
     }
     return map;
   }
+
+  static Future<bool> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.clear();
+  }
 }

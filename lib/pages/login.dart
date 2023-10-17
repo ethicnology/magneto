@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:magnetic/memory.dart';
 import 'package:magnetic/pages/torrents.dart';
 import 'package:magnetic/models/preferences.dart';
+import 'package:magnetic/utils.dart';
 import 'package:transmission/transmission.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,7 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var host = TextEditingController();
+  var host = TextEditingController(text: 'http://localhost:9091');
   var username = TextEditingController();
   var password = TextEditingController();
   var isSaveInSharedPreferences = false;
@@ -25,34 +26,35 @@ class _LoginPageState extends State<LoginPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            TextFormField(
-              controller: host,
-              decoration: const InputDecoration(labelText: 'Host URI'),
-            ),
-            TextFormField(
-              controller: username,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            TextFormField(
-              controller: password,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
+            SizedBox(
+              width: 180,
+              child: TextFormField(
+                controller: host,
+                decoration: const InputDecoration(labelText: 'Host'),
+              ),
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Text('Remember me ?'),
-                Checkbox(
-                  value: isSaveInSharedPreferences,
-                  onChanged: (newValue) {
-                    setState(() => isSaveInSharedPreferences = newValue!);
-                  },
+                SizedBox(
+                  width: 90,
+                  child: TextFormField(
+                    controller: username,
+                    decoration: const InputDecoration(labelText: 'Username'),
+                  ),
+                ),
+                SizedBox(
+                  width: 90,
+                  child: TextFormField(
+                    controller: password,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
                 transmission = Transmission(
@@ -61,20 +63,41 @@ class _LoginPageState extends State<LoginPage> {
                   password: password.text,
                 );
 
-                if (isSaveInSharedPreferences) {
-                  Preferences.save({
-                    'host': host.text,
-                    'username': username.text,
-                    'password': password.text,
-                  });
-                }
+                var valid = await testConnection(transmission);
+                if (valid) {
+                  if (isSaveInSharedPreferences) {
+                    Preferences.save({
+                      'host': host.text,
+                      'username': username.text,
+                      'password': password.text,
+                    });
+                  }
 
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: ((context) => const TorrentsPage())));
+                  if (!mounted) return;
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: ((context) => const TorrentsPage())));
+                } else {
+                  print('connection failed');
+                }
               },
               child: const Text('Login'),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Transform.scale(
+                  scale: 0.60,
+                  child: Switch(
+                    value: isSaveInSharedPreferences,
+                    onChanged: (newValue) {
+                      setState(() => isSaveInSharedPreferences = newValue);
+                    },
+                  ),
+                ),
+                const Text('Remember')
+              ],
             ),
           ],
         ),
