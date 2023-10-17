@@ -31,6 +31,16 @@ class _TorrentsState extends State<TorrentsPage> {
     setState(() {});
   }
 
+  void select(Torrent torrent) {
+    var hash = torrent.hashString!;
+    if (selected.contains(hash)) {
+      selected.remove(hash);
+    } else {
+      selected.add(hash);
+    }
+    setState(() {});
+  }
+
   bool isQueued(Status? status) =>
       status == Status.seedQueued ||
       status == Status.verifyQueued ||
@@ -54,16 +64,6 @@ class _TorrentsState extends State<TorrentsPage> {
       if (name.contains(search.toLowerCase())) result.add(torrent);
     }
     return result;
-  }
-
-  void select(Torrent torrent) {
-    var hash = torrent.hashString!;
-    if (selected.contains(hash)) {
-      selected.remove(hash);
-    } else {
-      selected.add(hash);
-    }
-    setState(() {});
   }
 
   updateView() {
@@ -159,13 +159,7 @@ class _TorrentsState extends State<TorrentsPage> {
                   var torrent = filtered[index];
                   var isSelected = selected.contains(torrent.hashString);
                   return InkWell(
-                    onLongPress: () {
-                      isSelecting = !isSelecting;
-                      selected.clear();
-                      if (isSelecting) select(torrent);
-                      setState(() {});
-                    },
-                    onDoubleTap: () => isSelecting ? select(torrent) : null,
+                    onDoubleTap: () => select(torrent),
                     child: SizedBox(
                       width: 100,
                       child: Row(
@@ -174,12 +168,11 @@ class _TorrentsState extends State<TorrentsPage> {
                             Transform.scale(
                               scale: 0.65,
                               child: Switch(
-                                  value: isSelected,
-                                  onChanged: (v) => select(torrent)),
+                                value: isSelected,
+                                onChanged: (v) => select(torrent),
+                              ),
                             ),
-                          Expanded(
-                            child: TorrentCompact(torrent: torrent),
-                          )
+                          TorrentCompact(torrent: torrent),
                         ],
                       ),
                     ),

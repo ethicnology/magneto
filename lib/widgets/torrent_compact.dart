@@ -25,20 +25,22 @@ class _TorrentCompactState extends State<TorrentCompact> {
     progress = torrent.percentComplete!;
     if (status == Status.verifying) progress = torrent.recheckProgress!;
 
-    return ListTile(
-      leading: getIcon(torrent.status),
-      title: Text(torrent.name!),
-      trailing: SizedBox(
-        width: 25,
-        child: CircularPercentIndicator(
-          radius: 13.0,
-          lineWidth: 2,
-          percent: progress,
-          center: Text(
-            '${(progress * 100).toInt()}',
-            style: const TextStyle(fontSize: 10),
+    return Expanded(
+      child: ListTile(
+        leading: getIcon(torrent.status),
+        title: Text(torrent.name!),
+        trailing: SizedBox(
+          width: 25,
+          child: CircularPercentIndicator(
+            radius: 13.0,
+            lineWidth: 2,
+            percent: progress,
+            center: Text(
+              '${(progress * 100).toInt()}',
+              style: const TextStyle(fontSize: 10),
+            ),
+            progressColor: Colors.green,
           ),
-          progressColor: Colors.green,
         ),
       ),
     );
