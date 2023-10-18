@@ -24,6 +24,7 @@ class DownloadStats extends StatelessWidget {
           ),
         if (torrent.rateDownload != null && torrent.rateDownload! > 0)
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               const Icon(Icons.arrow_circle_down, color: Colors.blue),
               Text('${torrent.peersSendingToUs}'),
