@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:magnetic/utils.dart';
+import 'package:magnetic/widgets/download_stats.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:transmission/transmission.dart';
 
@@ -29,6 +30,7 @@ class _TorrentCompactState extends State<TorrentCompact> {
       child: ListTile(
         leading: getIcon(torrent.status),
         title: Text(torrent.name!),
+        subtitle: DownloadStats(torrent: torrent),
         trailing: SizedBox(
           width: 25,
           child: CircularPercentIndicator(
