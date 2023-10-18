@@ -8,20 +8,26 @@ class DownloadStats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         if (torrent.rateUpload != null && torrent.rateUpload! > 0)
-          Row(
-            children: [
-              Text('${torrent.peersGettingFromUs}'),
-              const Icon(Icons.arrow_circle_up),
-              Text('${torrent.prettyRateUpload}'),
-            ],
+          Card(
+            color: Colors.black87,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Icon(Icons.arrow_circle_up, color: Colors.green),
+                Text('${torrent.peersGettingFromUs}'),
+                Text('${torrent.prettyRateUpload}'),
+              ],
+            ),
           ),
         if (torrent.rateDownload != null && torrent.rateDownload! > 0)
           Row(
             children: [
+              const Icon(Icons.arrow_circle_down, color: Colors.blue),
               Text('${torrent.peersSendingToUs}'),
-              const Icon(Icons.arrow_circle_down),
+              const Text(' | '),
               Text('${torrent.prettyRateDownload}'),
             ],
           ),
