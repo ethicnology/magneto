@@ -7,6 +7,7 @@ Widget getIcon(
   double width = 25,
   double height = 25,
   bool tooltip = true,
+  int badge = 0,
 }) {
   Widget child;
   switch (torrentStatus) {
@@ -41,11 +42,24 @@ Widget getIcon(
   }
   if (tooltip) {
     return SizedBox(
-        width: width,
-        height: height,
-        child: Tooltip(message: torrentStatus?.meaning, child: child));
+      width: width,
+      height: height,
+      child: Badge(
+        isLabelVisible: badge > 0,
+        label: Text(badge.toString()),
+        child: Tooltip(message: torrentStatus?.meaning, child: child),
+      ),
+    );
   } else {
-    return SizedBox(width: width, height: height, child: child);
+    return SizedBox(
+      width: width,
+      height: height,
+      child: Badge(
+        isLabelVisible: badge > 0,
+        label: Text(badge.toString()),
+        child: child,
+      ),
+    );
   }
 }
 

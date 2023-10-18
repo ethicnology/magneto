@@ -20,6 +20,7 @@ class _TorrentsState extends State<TorrentsPage> {
   var torrents = <Torrent>[];
   var filtered = <Torrent>[];
   var selected = <String>[];
+  var seeding = 0, stopped = 0, queued = 0, verifying = 0, downloading = 0;
   var actions = false;
   var isSelecting = false;
   var recentlyActive = false;
@@ -35,6 +36,11 @@ class _TorrentsState extends State<TorrentsPage> {
     if (connected == false) Navigator.pop(context);
 
     torrents = await transmission.torrent.get(recentlyActive: recentlyActive);
+    if (torrents.isEmpty) {
+      torrents = await transmission.torrent.get();
+      recentlyActive = false;
+    }
+
     filtered = torrents;
     setState(() {});
   }
@@ -83,6 +89,23 @@ class _TorrentsState extends State<TorrentsPage> {
     selectAll = selected.length == filtered.length;
   }
 
+  countTorrentPerStatus() {
+    seeding = 0;
+    stopped = 0;
+    queued = 0;
+    verifying = 0;
+    downloading = 0;
+    for (var t in torrents) {
+      if (t.status! == Status.seeding) seeding++;
+      if (t.status! == Status.stopped) stopped++;
+      if (t.status! == Status.downloading) downloading++;
+      if (t.status! == Status.verifying) verifying++;
+      if (t.status! == Status.seedQueued) queued++;
+      if (t.status! == Status.verifyQueued) queued++;
+      if (t.status! == Status.downloadQueued) queued++;
+    }
+  }
+
   @override
   void initState() {
     refreshTorrents();
@@ -92,6 +115,7 @@ class _TorrentsState extends State<TorrentsPage> {
   @override
   Widget build(BuildContext context) {
     updateView();
+    countTorrentPerStatus();
 
     if (torrents.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -119,25 +143,35 @@ class _TorrentsState extends State<TorrentsPage> {
               children: [
                 IconButton(
                     onPressed: () => setState(() => status = null),
-                    icon: const Tooltip(
-                        message: 'All',
-                        child: Icon(Icons.filter_list, color: Colors.blue))),
+                    icon: Tooltip(
+                      message: 'All',
+                      child: Badge(
+                        isLabelVisible: torrents.isNotEmpty,
+                        label: Text(torrents.length.toString()),
+                        child: const Icon(Icons.filter_list),
+                      ),
+                    )),
                 IconButton(
-                    onPressed: () => setState(() => status = Status.seeding),
-                    icon: getIcon(Status.seeding)),
+                  onPressed: () => setState(() => status = Status.seeding),
+                  icon: getIcon(Status.seeding, badge: seeding),
+                ),
                 IconButton(
-                    onPressed: () => setState(() => status = Status.stopped),
-                    icon: getIcon(Status.stopped)),
+                  onPressed: () => setState(() => status = Status.stopped),
+                  icon: getIcon(Status.stopped, badge: stopped),
+                ),
                 IconButton(
-                    onPressed: () =>
-                        setState(() => status = Status.downloading),
-                    icon: getIcon(Status.downloading)),
+                  onPressed: () => setState(() => status = Status.downloading),
+                  icon: getIcon(Status.downloading, badge: downloading),
+                ),
                 IconButton(
-                    onPressed: () => setState(() => status = Status.verifying),
-                    icon: getIcon(Status.verifying)),
+                  onPressed: () => setState(() => status = Status.verifying),
+                  icon: getIcon(Status.verifying, badge: verifying),
+                ),
                 IconButton(
-                    onPressed: () => setState(() => status = Status.seedQueued),
-                    icon: getIcon(Status.seedQueued)),
+                  onPressed: () => setState(() => status = Status.seedQueued),
+                  icon:
+                      getIcon(Status.seedQueued, badge: queued, tooltip: false),
+                ),
               ],
             ),
             Row(
