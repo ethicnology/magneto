@@ -39,7 +39,7 @@ class _TorrentsState extends State<TorrentsPage> {
   }
 
   void select(Torrent torrent) {
-    var hash = torrent.hashString!;
+    var hash = torrent.hash!;
     if (selected.contains(hash)) {
       selected.remove(hash);
     } else {
@@ -159,7 +159,7 @@ class _TorrentsState extends State<TorrentsPage> {
                         onChanged: (bool value) {
                           selectAll = !selectAll;
                           if (selectAll) {
-                            selected = [for (var t in filtered) t.hashString!];
+                            selected = [for (var t in filtered) t.hash!];
                           } else {
                             selected = [];
                           }
@@ -176,7 +176,7 @@ class _TorrentsState extends State<TorrentsPage> {
                 itemCount: filtered.length,
                 itemBuilder: (BuildContext ctx, int index) {
                   var torrent = filtered[index];
-                  var isSelected = selected.contains(torrent.hashString);
+                  var isSelected = selected.contains(torrent.hash);
                   return InkWell(
                     onDoubleTap: () {
                       actions = true;
@@ -217,8 +217,8 @@ class _TorrentsState extends State<TorrentsPage> {
                           ActionsMany(ids: selected),
                         if (isSelecting && actions && selected.length == 1)
                           ActionsSolo(
-                            torrent: filtered.firstWhere(
-                                (t) => t.hashString == selected.first),
+                            torrent: filtered
+                                .firstWhere((t) => t.hash == selected.first),
                           ),
                         if (actions && selected.isEmpty) const ActionsNone(),
                       ],

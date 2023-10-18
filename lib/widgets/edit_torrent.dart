@@ -86,7 +86,7 @@ class _EditTorrentState extends State<EditTorrent> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var ids = [torrent.hashString!];
+          var ids = [torrent.hash!];
           if (location != torrent.downloadDir) {
             transmission.torrent
                 .move(ids: ids, location: location!, move: true);

@@ -361,7 +361,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: a6b20a2dd165d32f37211f0a5420ea6f6b19d19f
+      resolved-ref: b2d6828eb6848d307cbaeae0043428c3938922b5
       url: "https://github.com/ethicnology/dart-transmission"
     source: git
     version: "0.2.0"

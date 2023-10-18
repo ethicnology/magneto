@@ -95,7 +95,7 @@ class _EditTorrentState extends State<AddTorrent> {
                               metainfo: base64.encode(file.bytes!),
                               downloadDir: downloadDir,
                             );
-                            addedTorrents.add((file.name, added.hashString!));
+                            addedTorrents.add((file.name, added.hash!));
                           } catch (e) {
                             addedTorrents.add((file.name, ''));
                             print(e);
