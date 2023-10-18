@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:magnetic/memory.dart';
-import 'package:magnetic/models/preferences.dart';
-import 'package:magnetic/utils.dart';
-import 'package:magnetic/widgets/actions_many.dart';
-import 'package:magnetic/widgets/actions_none.dart';
-import 'package:magnetic/widgets/actions_solo.dart';
-import 'package:magnetic/widgets/torrent_compact.dart';
+import 'package:magneto/memory.dart';
+import 'package:magneto/models/preferences.dart';
+import 'package:magneto/utils.dart';
+import 'package:magneto/widgets/actions_many.dart';
+import 'package:magneto/widgets/actions_none.dart';
+import 'package:magneto/widgets/actions_solo.dart';
+import 'package:magneto/widgets/torrent_compact.dart';
 import 'package:transmission/transmission.dart';
 
 class TorrentsPage extends StatefulWidget {

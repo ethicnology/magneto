@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/pages/splash.dart';
+import 'package:magneto/pages/splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'magnetic',
+      title: 'magneto',
       theme: ThemeData(
         // This is the theme of your application.
         //

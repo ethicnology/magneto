@@ -1,4 +1,4 @@
-# magnetic
+# magneto
 
 A new Flutter project.
 

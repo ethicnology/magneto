@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/memory.dart';
-import 'package:magnetic/utils.dart';
+import 'package:magneto/memory.dart';
+import 'package:magneto/utils.dart';
 import 'package:transmission/transmission.dart';
 
 class ActionsMany extends StatefulWidget {

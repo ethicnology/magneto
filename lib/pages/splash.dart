@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/memory.dart';
-import 'package:magnetic/pages/login.dart';
-import 'package:magnetic/pages/torrents.dart';
-import 'package:magnetic/models/preferences.dart';
-import 'package:magnetic/utils.dart';
+import 'package:magneto/memory.dart';
+import 'package:magneto/pages/login.dart';
+import 'package:magneto/pages/torrents.dart';
+import 'package:magneto/models/preferences.dart';
+import 'package:magneto/utils.dart';
 import 'package:transmission/transmission.dart';
 
 class SplashPage extends StatefulWidget {

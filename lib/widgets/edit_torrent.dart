@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/memory.dart';
+import 'package:magneto/memory.dart';
 import 'package:transmission/transmission.dart';
 
 class EditTorrent extends StatefulWidget {

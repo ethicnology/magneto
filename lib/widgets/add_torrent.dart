@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:magnetic/memory.dart';
+import 'package:magneto/memory.dart';
 import 'package:freeleech/freeleech.dart';
 
 class AddTorrent extends StatefulWidget {

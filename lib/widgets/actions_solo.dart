@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/widgets/edit_torrent.dart';
+import 'package:magneto/widgets/edit_torrent.dart';
 import 'package:transmission/transmission.dart';
 
 class ActionsSolo extends StatefulWidget {

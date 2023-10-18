@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/widgets/add_torrent.dart';
+import 'package:magneto/widgets/add_torrent.dart';
 
 class ActionsNone extends StatefulWidget {
   const ActionsNone({super.key});

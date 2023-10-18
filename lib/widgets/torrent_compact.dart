@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:magnetic/utils.dart';
-import 'package:magnetic/widgets/download_stats.dart';
+import 'package:magneto/utils.dart';
+import 'package:magneto/widgets/download_stats.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:transmission/transmission.dart';
 
