@@ -64,55 +64,65 @@ class _EditTorrentState extends State<AddTorrent> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             if (_isLoading) const CircularProgressIndicator(),
-            ListTile(
-              title: const Text('Freeleech'),
-              leading: Switch(
-                  value: isLeech,
-                  onChanged: (a) => setState(() => isLeech = !isLeech)),
-            ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                DropdownButton<String>(
-                  value: downloadDir,
-                  onChanged: (String? newValue) {
-                    setState(() => downloadDir = newValue!);
-                  },
-                  items: directories.map<DropdownMenuItem<String>>((value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                Flexible(
+                  flex: 1,
+                  child: ListTile(
+                    dense: true,
+                    title: const Text('Freeleech'),
+                    leading: Transform.scale(
+                      scale: 0.65,
+                      child: Switch(
+                          value: isLeech,
+                          onChanged: (a) => setState(() => isLeech = !isLeech)),
+                    ),
+                  ),
                 ),
-                ElevatedButton.icon(
-                    onPressed: () async {
-                      await _pickFiles();
-                      if (_paths != null) {
-                        for (var file in _paths!) {
-                          try {
-                            var added = await transmission.torrent.add(
-                              metainfo: base64.encode(file.bytes!),
-                              downloadDir: downloadDir,
-                            );
-                            addedTorrents.add((file.name, added.hash!));
-                          } catch (e) {
-                            addedTorrents.add((file.name, ''));
-                            print(e);
-                          }
-                        }
-                        var ids = [
-                          for (var t in addedTorrents)
-                            if (t.$2.isNotEmpty) t.$2
-                        ];
-                        if (isLeech) freeleech(transmission, ids);
-                        setState(() {});
-                      }
-                    },
-                    label: const Text('torrents'),
-                    icon: const Icon(Icons.description)),
+                const Flexible(flex: 1, child: SizedBox()),
               ],
             ),
+            SizedBox(
+              width: 150,
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: downloadDir,
+                onChanged: (String? newValue) {
+                  setState(() => downloadDir = newValue!);
+                },
+                items: directories.map<DropdownMenuItem<String>>((value) {
+                  return DropdownMenuItem<String>(
+                      value: value, child: Text(value));
+                }).toList(),
+              ),
+            ),
+            ElevatedButton.icon(
+                onPressed: () async {
+                  await _pickFiles();
+                  if (_paths != null) {
+                    for (var file in _paths!) {
+                      try {
+                        var added = await transmission.torrent.add(
+                          metainfo: base64.encode(file.bytes!),
+                          downloadDir: downloadDir,
+                        );
+                        addedTorrents.add((file.name, added.hash!));
+                      } catch (e) {
+                        addedTorrents.add((file.name, ''));
+                        print(e);
+                      }
+                    }
+                    var ids = [
+                      for (var t in addedTorrents)
+                        if (t.$2.isNotEmpty) t.$2
+                    ];
+                    if (isLeech) freeleech(transmission, ids);
+                    setState(() {});
+                  }
+                },
+                label: const Text('Upload torrents'),
+                icon: const Icon(Icons.file_upload)),
             if (addedTorrents.isNotEmpty)
               ...List.generate(addedTorrents.length, (index) {
                 var item = addedTorrents[index];
