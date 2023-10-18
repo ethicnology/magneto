@@ -217,7 +217,7 @@ class _TorrentsState extends State<TorrentsPage> {
                           ActionsMany(ids: selected),
                         if (isSelecting && actions && selected.length == 1)
                           ActionsSolo(
-                            torrent: filtered
+                            torrent: torrents
                                 .firstWhere((t) => t.hash == selected.first),
                           ),
                         if (actions && selected.isEmpty) const ActionsNone(),
