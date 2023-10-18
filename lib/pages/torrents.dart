@@ -22,6 +22,7 @@ class _TorrentsState extends State<TorrentsPage> {
   var selected = <String>[];
   var actions = false;
   var isSelecting = false;
+  var recentlyActive = false;
   var selectAll = false;
   var localData = false;
   var name = '';
@@ -33,7 +34,7 @@ class _TorrentsState extends State<TorrentsPage> {
     if (!mounted) return;
     if (connected == false) Navigator.pop(context);
 
-    torrents = await transmission.torrent.get();
+    torrents = await transmission.torrent.get(recentlyActive: recentlyActive);
     filtered = torrents;
     setState(() {});
   }
@@ -139,12 +140,32 @@ class _TorrentsState extends State<TorrentsPage> {
                     icon: getIcon(Status.seedQueued)),
               ],
             ),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Search',
-                prefixIcon: Icon(Icons.search),
-              ),
-              onChanged: (value) => setState(() => name = value),
+            Row(
+              children: [
+                Flexible(
+                  flex: 3,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Search',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (value) => setState(() => name = value),
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  child: ListTile(
+                    dense: true,
+                    title: const Text('Active'),
+                    leading: Transform.scale(
+                      scale: 0.65,
+                      child: Switch(
+                          value: recentlyActive,
+                          onChanged: (a) => setState(() => recentlyActive = a)),
+                    ),
+                  ),
+                ),
+              ],
             ),
             if (isSelecting)
               Card(
