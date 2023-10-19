@@ -23,7 +23,7 @@ class _MyWidgetState extends State<ActionsMany> {
         children: [
           IconButton(
             onPressed: () => transmission.torrent.start(ids: widget.ids),
-            icon: const Icon(Icons.play_circle),
+            icon: const Icon(Icons.play_circle_rounded),
             color: Colors.green,
           ),
           IconButton(
@@ -32,11 +32,11 @@ class _MyWidgetState extends State<ActionsMany> {
               color: Colors.amber),
           IconButton(
               onPressed: () => transmission.torrent.verify(ids: widget.ids),
-              icon: const Icon(Icons.verified),
+              icon: const Icon(Icons.verified_rounded),
               color: Colors.purpleAccent),
           IconButton(
               onPressed: () => transmission.torrent.reannounce(ids: widget.ids),
-              icon: const Icon(Icons.campaign),
+              icon: const Icon(Icons.campaign_rounded),
               color: Colors.teal),
           IconButton(
             onPressed: () {
@@ -86,7 +86,7 @@ class _MyWidgetState extends State<ActionsMany> {
                 },
               );
             },
-            icon: const Icon(Icons.remove_circle),
+            icon: const Icon(Icons.remove_circle_rounded),
             color: Colors.redAccent,
           )
         ],

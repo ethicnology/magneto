@@ -122,7 +122,7 @@ class _EditTorrentState extends State<AddTorrent> {
                   }
                 },
                 label: const Text('Upload torrents'),
-                icon: const Icon(Icons.file_upload)),
+                icon: const Icon(Icons.file_upload_rounded)),
             if (addedTorrents.isNotEmpty)
               ...List.generate(addedTorrents.length, (index) {
                 var item = addedTorrents[index];
@@ -130,9 +130,9 @@ class _EditTorrentState extends State<AddTorrent> {
                   child: Row(
                     children: [
                       if (item.$2.isEmpty)
-                        const Icon(Icons.cancel, color: Colors.red),
+                        const Icon(Icons.cancel_rounded, color: Colors.red),
                       if (item.$2.isNotEmpty)
-                        const Icon(Icons.check, color: Colors.green),
+                        const Icon(Icons.check_rounded, color: Colors.green),
                       Text(item.$1)
                     ],
                   ),

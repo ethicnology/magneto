@@ -24,7 +24,7 @@ class _ActionsSoloState extends State<ActionsSolo> {
                   builder: (context) => EditTorrent(torrent: widget.torrent),
                 );
               },
-              icon: const Icon(Icons.edit_square),
+              icon: const Icon(Icons.edit_rounded),
               color: Colors.white),
         ],
       ),

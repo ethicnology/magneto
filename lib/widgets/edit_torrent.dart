@@ -45,7 +45,7 @@ class _EditTorrentState extends State<EditTorrent> {
                   child: Column(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.add_circle),
+                        icon: const Icon(Icons.add_circle_rounded),
                         onPressed: () {
                           setState(() => widget.torrent.trackerList?.add(''));
                         },
@@ -66,7 +66,7 @@ class _EditTorrentState extends State<EditTorrent> {
                                 },
                               ),
                               trailing: IconButton(
-                                icon: const Icon(Icons.remove_circle),
+                                icon: const Icon(Icons.remove_circle_rounded),
                                 onPressed: () {
                                   setState(() => widget.torrent.trackerList
                                       ?.removeAt(index));
@@ -98,7 +98,7 @@ class _EditTorrentState extends State<EditTorrent> {
           if (!mounted) return;
           Navigator.pop(context);
         },
-        child: const Icon(Icons.save),
+        child: const Icon(Icons.save_rounded),
       ),
     );
   }

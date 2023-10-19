@@ -12,10 +12,10 @@ Widget getIcon(
   Widget child;
   switch (torrentStatus) {
     case Status.stopped:
-      child = const Icon(Icons.pause_circle, color: Colors.amber);
+      child = const Icon(Icons.pause_circle_rounded, color: Colors.amber);
       break;
     case Status.verifyQueued:
-      child = const Icon(Icons.pending, color: Colors.grey);
+      child = const Icon(Icons.pending_rounded, color: Colors.grey);
       break;
     case Status.verifying:
       child = SvgPicture.asset('assets/clock_loader_40.svg',
@@ -23,13 +23,13 @@ Widget getIcon(
               const ColorFilter.mode(Colors.purpleAccent, BlendMode.srcIn));
       break;
     case Status.downloadQueued:
-      child = const Icon(Icons.pending, color: Colors.grey);
+      child = const Icon(Icons.pending_rounded, color: Colors.grey);
       break;
     case Status.downloading:
-      child = const Icon(Icons.downloading, color: Colors.blue);
+      child = const Icon(Icons.downloading_rounded, color: Colors.blue);
       break;
     case Status.seedQueued:
-      child = const Icon(Icons.pending, color: Colors.grey);
+      child = const Icon(Icons.pending_rounded, color: Colors.grey);
       break;
     case Status.seeding:
       child = SvgPicture.asset(
@@ -38,7 +38,7 @@ Widget getIcon(
       );
       break;
     default:
-      child = const Icon(Icons.question_mark, color: Colors.red);
+      child = const Icon(Icons.question_mark_rounded, color: Colors.red);
   }
   if (tooltip) {
     return SizedBox(

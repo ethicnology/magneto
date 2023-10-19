@@ -22,7 +22,7 @@ class _ActionsNoneState extends State<ActionsNone> {
                   builder: (context) => const AddTorrent(),
                 );
               },
-              icon: const Icon(Icons.add_circle),
+              icon: const Icon(Icons.add_circle_rounded),
               color: Colors.blue),
         ],
       ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:magneto/memory.dart';
@@ -28,8 +30,13 @@ class _TorrentsState extends State<TorrentsPage> {
   var localData = false;
   var name = '';
   Status? status;
+  Timer? timer;
+  int? seconds;
+  final periods = [null, 1, 3, 5, 10, 15, 30, 50];
 
   Future<void> refreshTorrents() async {
+    print('refresh: ${DateTime.now().toUtc().toIso8601String()}');
+
     var connected = await testConnection(transmission);
 
     if (!mounted) return;
@@ -112,6 +119,18 @@ class _TorrentsState extends State<TorrentsPage> {
     super.initState();
   }
 
+  void setTimer(int? value) {
+    seconds = value;
+    if (value != null) {
+      timer = Timer.periodic(Duration(seconds: value), (timer) async {
+        await refreshTorrents();
+      });
+    } else {
+      timer?.cancel();
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     updateView();
@@ -124,13 +143,32 @@ class _TorrentsState extends State<TorrentsPage> {
         appBar: AppBar(
           title: const Text('Torrents'),
           automaticallyImplyLeading: false,
+          leadingWidth: 100,
+          leading: Row(
+            children: [
+              IconButton(
+                  onPressed: refreshTorrents,
+                  icon: const Icon(Icons.refresh_rounded)),
+              DropdownButton<int?>(
+                icon: const Icon(Icons.arrow_downward_rounded),
+                value: seconds,
+                items: periods.map((int? value) {
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(value != null ? '$value s' : 'null'),
+                  );
+                }).toList(),
+                onChanged: (value) => setTimer(value),
+              ),
+            ],
+          ),
           actions: [
             IconButton(
               onPressed: () {
                 Preferences.clear();
                 SystemNavigator.pop(animated: true);
               },
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.logout_rounded),
               color: Colors.red,
             )
           ],
@@ -148,7 +186,7 @@ class _TorrentsState extends State<TorrentsPage> {
                       child: Badge(
                         isLabelVisible: torrents.isNotEmpty,
                         label: Text(torrents.length.toString()),
-                        child: const Icon(Icons.filter_list),
+                        child: const Icon(Icons.filter_list_rounded),
                       ),
                     )),
                 IconButton(
@@ -181,7 +219,7 @@ class _TorrentsState extends State<TorrentsPage> {
                   child: TextField(
                     decoration: const InputDecoration(
                       labelText: 'Search',
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search_rounded),
                     ),
                     onChanged: (value) => setState(() => name = value),
                   ),
@@ -227,34 +265,40 @@ class _TorrentsState extends State<TorrentsPage> {
                 ),
               ),
             Expanded(
-              child: ListView.builder(
-                itemCount: filtered.length,
-                itemBuilder: (BuildContext ctx, int index) {
-                  var torrent = filtered[index];
-                  var isSelected = selected.contains(torrent.hash);
-                  return InkWell(
-                    onDoubleTap: () {
-                      actions = true;
-                      select(torrent);
-                    },
-                    child: SizedBox(
-                      width: 100,
-                      child: Row(
-                        children: [
-                          if (isSelecting && isSelected)
-                            Transform.scale(
-                              scale: 0.65,
-                              child: Switch(
-                                value: isSelected,
-                                onChanged: (v) => select(torrent),
-                              ),
-                            ),
-                          TorrentCompact(torrent: torrent),
-                        ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Wrap(
+                  // spacing: 16, // Adjust spacing as needed
+                  // runSpacing: 16, // Adjust run spacing as needed
+                  children: filtered.map((torrent) {
+                    var isSelected = selected.contains(torrent.hash);
+                    return SizedBox(
+                      width: 500,
+                      child: InkWell(
+                        onDoubleTap: () {
+                          actions = true;
+                          select(torrent);
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Row(
+                            children: [
+                              if (isSelecting && isSelected)
+                                Transform.scale(
+                                  scale: 0.65,
+                                  child: Switch(
+                                    value: isSelected,
+                                    onChanged: (v) => select(torrent),
+                                  ),
+                                ),
+                              TorrentCompact(torrent: torrent),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ]),
@@ -282,7 +326,7 @@ class _TorrentsState extends State<TorrentsPage> {
             ),
             FloatingActionButton(
               onPressed: () => setState(() => actions = !actions),
-              child: const Icon(Icons.apps),
+              child: const Icon(Icons.apps_rounded),
             ),
           ],
         ),
