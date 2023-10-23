@@ -313,7 +313,11 @@ class _TorrentsState extends State<TorrentsPage> {
                   ? Column(
                       children: [
                         if ((isSelecting && actions) && selected.isNotEmpty)
-                          ActionsMany(ids: selected),
+                          ActionsMany(
+                            torrents: torrents
+                                .where((t) => selected.contains(t.hash!))
+                                .toList(),
+                          ),
                         if (isSelecting && actions && selected.length == 1)
                           ActionsSolo(
                             torrent: torrents
@@ -324,7 +328,7 @@ class _TorrentsState extends State<TorrentsPage> {
                     )
                   : const SizedBox.shrink(),
             ),
-            FloatingActionButton(
+            FloatingActionButton.small(
               onPressed: () => setState(() => actions = !actions),
               child: const Icon(Icons.apps_rounded),
             ),
