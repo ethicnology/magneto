@@ -14,7 +14,6 @@ class AddTorrent extends StatefulWidget {
 }
 
 class _EditTorrentState extends State<AddTorrent> {
-  final _formKey = GlobalKey<FormState>();
   var filename = TextEditingController();
   var metainfo = TextEditingController();
   final _dialogTitleController = TextEditingController();
@@ -54,12 +53,9 @@ class _EditTorrentState extends State<AddTorrent> {
 
   @override
   Widget build(BuildContext context) {
-    if (directories.isNotEmpty) downloadDir = directories.first;
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add torrents')),
-      body: Form(
-        key: _formKey,
+    return AlertDialog(
+      title: Text('Add torrents'),
+      content: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -67,20 +63,14 @@ class _EditTorrentState extends State<AddTorrent> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  flex: 1,
-                  child: ListTile(
-                    dense: true,
-                    title: const Text('Freeleech'),
-                    leading: Transform.scale(
-                      scale: 0.65,
-                      child: Switch(
-                          value: isLeech,
-                          onChanged: (a) => setState(() => isLeech = !isLeech)),
-                    ),
-                  ),
+                Transform.scale(
+                  scale: 0.65,
+                  child: Switch(
+                      value: isLeech,
+                      onChanged: (a) => setState(() => isLeech = !isLeech)),
                 ),
-                const Flexible(flex: 1, child: SizedBox()),
+                const Text('Freeleech',
+                    overflow: TextOverflow.ellipsis, maxLines: 1),
               ],
             ),
             SizedBox(
@@ -88,9 +78,7 @@ class _EditTorrentState extends State<AddTorrent> {
               child: DropdownButton<String>(
                 isExpanded: true,
                 value: downloadDir,
-                onChanged: (String? newValue) {
-                  setState(() => downloadDir = newValue!);
-                },
+                onChanged: (value) => setState(() => downloadDir = value),
                 items: directories.map<DropdownMenuItem<String>>((value) {
                   return DropdownMenuItem<String>(
                       value: value, child: Text(value));
@@ -124,20 +112,38 @@ class _EditTorrentState extends State<AddTorrent> {
                 label: const Text('Upload torrents'),
                 icon: const Icon(Icons.file_upload_rounded)),
             if (addedTorrents.isNotEmpty)
-              ...List.generate(addedTorrents.length, (index) {
-                var item = addedTorrents[index];
-                return Card(
-                  child: Row(
-                    children: [
-                      if (item.$2.isEmpty)
-                        const Icon(Icons.cancel_rounded, color: Colors.red),
-                      if (item.$2.isNotEmpty)
-                        const Icon(Icons.check_rounded, color: Colors.green),
-                      Text(item.$1)
-                    ],
-                  ),
-                );
-              }),
+              ListView.builder(
+                  itemCount: addedTorrents.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    var item = addedTorrents[index];
+
+                    return SizedBox(
+                      width: 190,
+                      height: 40,
+                      child: Card(
+                        child: Row(
+                          children: [
+                            if (item.$2.isEmpty)
+                              const Icon(Icons.cancel_rounded,
+                                  color: Colors.red),
+                            if (item.$2.isNotEmpty)
+                              const Icon(Icons.check_rounded,
+                                  color: Colors.green),
+                            SizedBox(
+                              width: 140,
+                              child: Text(
+                                item.$1,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
           ],
         ),
       ),
