@@ -17,7 +17,7 @@ class _ActionsNoneState extends State<ActionsNone> {
         children: [
           IconButton(
               onPressed: () {
-                showModalBottomSheet(
+                showDialog(
                   context: context,
                   builder: (context) => const AddTorrent(),
                 );
