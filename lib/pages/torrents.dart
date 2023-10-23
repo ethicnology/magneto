@@ -225,18 +225,19 @@ class _TorrentsState extends State<TorrentsPage> {
                   ),
                 ),
                 Flexible(
-                  flex: 2,
-                  child: ListTile(
-                    dense: true,
-                    title: const Text('Active'),
-                    leading: Transform.scale(
-                      scale: 0.65,
-                      child: Switch(
-                          value: recentlyActive,
-                          onChanged: (a) => setState(() => recentlyActive = a)),
-                    ),
-                  ),
-                ),
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        Transform.scale(
+                          scale: 0.65,
+                          child: Switch(
+                              value: recentlyActive,
+                              onChanged: (a) =>
+                                  setState(() => recentlyActive = a)),
+                        ),
+                        const Text('Active'),
+                      ],
+                    )),
               ],
             ),
             if (isSelecting)
