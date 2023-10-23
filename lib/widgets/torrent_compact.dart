@@ -29,19 +29,23 @@ class _TorrentCompactState extends State<TorrentCompact> {
     return Expanded(
       child: ListTile(
         leading: getIcon(torrent.status),
-        title: Text(torrent.name!),
+        title:
+            Text(torrent.name!, overflow: TextOverflow.ellipsis, maxLines: 1),
         subtitle: DownloadStats(torrent: torrent),
-        trailing: SizedBox(
-          width: 25,
-          child: CircularPercentIndicator(
-            radius: 13.0,
-            lineWidth: 2,
-            percent: progress,
-            center: Text(
-              '${(progress * 100).toInt()}',
-              style: const TextStyle(fontSize: 10),
+        trailing: Tooltip(
+          message: torrent.name!,
+          child: SizedBox(
+            width: 25,
+            child: CircularPercentIndicator(
+              radius: 13.0,
+              lineWidth: 2,
+              percent: progress,
+              center: Text(
+                '${(progress * 100).toInt()}',
+                style: const TextStyle(fontSize: 10),
+              ),
+              progressColor: Colors.green,
             ),
-            progressColor: Colors.green,
           ),
         ),
       ),
