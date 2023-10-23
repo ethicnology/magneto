@@ -55,6 +55,7 @@ class _EditTorrentState extends State<EditTorrent> {
                         width: 300,
                         child: ListView.builder(
                           itemCount: widget.torrent.trackerList?.length,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             return ListTile(
                               title: TextField(
