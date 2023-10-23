@@ -18,7 +18,8 @@ class TorrentsPage extends StatefulWidget {
   State<TorrentsPage> createState() => _TorrentsState();
 }
 
-class _TorrentsState extends State<TorrentsPage> {
+class _TorrentsState extends State<TorrentsPage>
+    with SingleTickerProviderStateMixin {
   var torrents = <Torrent>[];
   var filtered = <Torrent>[];
   var selected = <String>[];
@@ -33,9 +34,13 @@ class _TorrentsState extends State<TorrentsPage> {
   Timer? timer;
   int? seconds;
   final periods = [null, 1, 3, 5, 10, 15, 30, 50];
+  var _pressed = false;
+  late AnimationController _controller;
 
   Future<void> refreshTorrents() async {
     print('refresh: ${DateTime.now().toUtc().toIso8601String()}');
+    setState(() => _pressed = !_pressed);
+    _controller.forward(from: 0.0);
 
     var connected = await testConnection(transmission);
 
@@ -115,18 +120,19 @@ class _TorrentsState extends State<TorrentsPage> {
 
   @override
   void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
     refreshTorrents();
     super.initState();
   }
 
   void setTimer(int? value) {
     seconds = value;
+    timer?.cancel(); // disable previous timer
     if (value != null) {
       timer = Timer.periodic(Duration(seconds: value), (timer) async {
         await refreshTorrents();
       });
-    } else {
-      timer?.cancel();
     }
     setState(() {});
   }
@@ -146,9 +152,12 @@ class _TorrentsState extends State<TorrentsPage> {
           leadingWidth: 100,
           leading: Row(
             children: [
-              IconButton(
-                  onPressed: refreshTorrents,
-                  icon: const Icon(Icons.refresh_rounded)),
+              RotationTransition(
+                turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
+                child: IconButton(
+                    onPressed: refreshTorrents,
+                    icon: const Icon(Icons.refresh_rounded)),
+              ),
               DropdownButton<int?>(
                 icon: const Icon(Icons.arrow_downward_rounded),
                 value: seconds,
