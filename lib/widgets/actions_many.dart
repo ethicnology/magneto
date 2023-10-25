@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:magneto/memory.dart';
+import 'package:magneto/models/global.dart';
 import 'package:magneto/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
 class ActionsMany extends StatefulWidget {
@@ -16,9 +17,16 @@ class _MyWidgetState extends State<ActionsMany> {
 
   @override
   Widget build(BuildContext context) {
+    var global = Provider.of<Global>(context, listen: true);
+    var transmission = global.transmission;
     var torrents = widget.torrents;
     var ids = [for (var t in torrents) t.hash!];
     var names = [for (var t in torrents) t.name!];
+
+    void onPressed(Future<void> function) {
+      function;
+      global.clearSelection();
+    }
 
     return Card(
       color: Colors.black54,
@@ -26,20 +34,21 @@ class _MyWidgetState extends State<ActionsMany> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            onPressed: () => transmission.torrent.start(ids: ids),
+            onPressed: () => onPressed(transmission.torrent.start(ids: ids)),
             icon: const Icon(Icons.play_circle_rounded),
             color: Colors.green,
           ),
           IconButton(
-              onPressed: () => transmission.torrent.stop(ids: ids),
+              onPressed: () => onPressed(transmission.torrent.stop(ids: ids)),
               icon: getIcon(Status.stopped, tooltip: false),
               color: Colors.amber),
           IconButton(
-              onPressed: () => transmission.torrent.verify(ids: ids),
+              onPressed: () => onPressed(transmission.torrent.verify(ids: ids)),
               icon: const Icon(Icons.verified_rounded),
               color: Colors.purpleAccent),
           IconButton(
-              onPressed: () => transmission.torrent.reannounce(ids: ids),
+              onPressed: () =>
+                  onPressed(transmission.torrent.reannounce(ids: ids)),
               icon: const Icon(Icons.campaign_rounded),
               color: Colors.teal),
           IconButton(
@@ -91,10 +100,8 @@ class _MyWidgetState extends State<ActionsMany> {
                           ),
                           TextButton(
                             onPressed: () {
-                              transmission.torrent.remove(
-                                ids: ids,
-                                deleteLocalData: removeLocalData,
-                              );
+                              onPressed(transmission.torrent.remove(
+                                  ids: ids, deleteLocalData: removeLocalData));
                               Navigator.of(context).pop();
                             },
                             child: Text('Remove ${ids.length}'),

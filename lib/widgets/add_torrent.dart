@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:magneto/memory.dart';
 import 'package:freeleech/freeleech.dart';
+import 'package:magneto/models/global.dart';
+import 'package:provider/provider.dart';
 
 class AddTorrent extends StatefulWidget {
   const AddTorrent({super.key});
@@ -53,6 +54,8 @@ class _EditTorrentState extends State<AddTorrent> {
 
   @override
   Widget build(BuildContext context) {
+    var global = Provider.of<Global>(context, listen: true);
+
     return AlertDialog(
       title: const Text('Add torrents'),
       content: SingleChildScrollView(
@@ -79,7 +82,8 @@ class _EditTorrentState extends State<AddTorrent> {
                 isExpanded: true,
                 value: downloadDir,
                 onChanged: (value) => setState(() => downloadDir = value),
-                items: directories.map<DropdownMenuItem<String>>((value) {
+                items:
+                    global.directories.map<DropdownMenuItem<String>>((value) {
                   return DropdownMenuItem<String>(
                       value: value, child: Text(value));
                 }).toList(),
@@ -91,7 +95,7 @@ class _EditTorrentState extends State<AddTorrent> {
                   if (_paths != null) {
                     for (var file in _paths!) {
                       try {
-                        var added = await transmission.torrent.add(
+                        var added = await global.transmission.torrent.add(
                           metainfo: base64.encode(file.bytes!),
                           downloadDir: downloadDir,
                         );
@@ -105,7 +109,7 @@ class _EditTorrentState extends State<AddTorrent> {
                       for (var t in addedTorrents)
                         if (t.$2.isNotEmpty) t.$2
                     ];
-                    if (isLeech) freeleech(transmission, ids);
+                    if (isLeech) freeleech(global.transmission, ids);
                     setState(() {});
                   }
                 },

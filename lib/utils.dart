@@ -62,14 +62,3 @@ Widget getIcon(
     );
   }
 }
-
-Future<bool> testConnection(Transmission transmission) async {
-  try {
-    var session = await transmission.session.get();
-    print(session);
-    return true;
-  } catch (e) {
-    print('connection failed: $e');
-    return false;
-  }
-}

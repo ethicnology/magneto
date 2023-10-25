@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:magneto/memory.dart';
 import 'package:magneto/models/preferences.dart';
+import 'package:magneto/models/global.dart';
 import 'package:magneto/utils.dart';
 import 'package:magneto/widgets/actions_many.dart';
 import 'package:magneto/widgets/actions_none.dart';
 import 'package:magneto/widgets/actions_solo.dart';
 import 'package:magneto/widgets/torrent_compact.dart';
+import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
 class TorrentsPage extends StatefulWidget {
@@ -20,9 +21,7 @@ class TorrentsPage extends StatefulWidget {
 
 class _TorrentsState extends State<TorrentsPage>
     with SingleTickerProviderStateMixin {
-  var torrents = <Torrent>[];
   var filtered = <Torrent>[];
-  var selected = <String>[];
   var seeding = 0, stopped = 0, queued = 0, verifying = 0, downloading = 0;
   var actions = false;
   var isSelecting = false;
@@ -34,36 +33,23 @@ class _TorrentsState extends State<TorrentsPage>
   Timer? timer;
   int? seconds;
   final periods = [null, 1, 3, 5, 10, 15, 30, 50];
-  var _pressed = false;
+  var isRefreshing = false;
   late AnimationController _controller;
 
   Future<void> refreshTorrents() async {
-    print('refresh: ${DateTime.now().toUtc().toIso8601String()}');
-    setState(() => _pressed = !_pressed);
+    isRefreshing = !isRefreshing;
     _controller.forward(from: 0.0);
+    setState(() {});
 
-    var connected = await testConnection(transmission);
+    var global = Provider.of<Global>(context, listen: false);
+    var isConnected = await global.test();
 
     if (!mounted) return;
-    if (connected == false) Navigator.pop(context);
+    if (isConnected == false) Navigator.pop(context);
 
-    torrents = await transmission.torrent.get(recentlyActive: recentlyActive);
-    if (torrents.isEmpty) {
-      torrents = await transmission.torrent.get();
-      recentlyActive = false;
-    }
+    global.refresh();
+    filtered = global.torrents;
 
-    filtered = torrents;
-    setState(() {});
-  }
-
-  void select(Torrent torrent) {
-    var hash = torrent.hash!;
-    if (selected.contains(hash)) {
-      selected.remove(hash);
-    } else {
-      selected.add(hash);
-    }
     setState(() {});
   }
 
@@ -72,7 +58,15 @@ class _TorrentsState extends State<TorrentsPage>
       status == Status.verifyQueued ||
       status == Status.downloadQueued;
 
-  List<Torrent> filter(Status status) {
+  updateView(List<Torrent> torrents, List<String> selection) {
+    isSelecting = selection.isNotEmpty;
+    if (status == null) filtered = torrents;
+    if (status != null) filtered = filter(torrents, status!);
+    if (name.isNotEmpty) filtered = search(filtered, name);
+    selectAll = selection.length == filtered.length;
+  }
+
+  List<Torrent> filter(List<Torrent> torrents, Status status) {
     var result = <Torrent>[];
     var queued = false;
     if (isQueued(status)) queued = true;
@@ -92,16 +86,7 @@ class _TorrentsState extends State<TorrentsPage>
     return result;
   }
 
-  updateView() {
-    isSelecting = selected.isNotEmpty;
-    if (status == null) filtered = torrents;
-    if (status != null) filtered = filter(status!);
-    if (name.isNotEmpty) filtered = search(filtered, name);
-    directories = {for (var x in torrents) x.downloadDir!}.toList();
-    selectAll = selected.length == filtered.length;
-  }
-
-  countTorrentPerStatus() {
+  countTorrentPerStatus(List<Torrent> torrents) {
     seeding = 0;
     stopped = 0;
     queued = 0;
@@ -139,8 +124,11 @@ class _TorrentsState extends State<TorrentsPage>
 
   @override
   Widget build(BuildContext context) {
-    updateView();
-    countTorrentPerStatus();
+    var global = Provider.of<Global>(context, listen: true);
+    global.directories =
+        {for (var x in global.torrents) x.downloadDir!}.toList();
+    updateView(global.torrents, global.selection);
+    countTorrentPerStatus(global.torrents);
 
     return Scaffold(
       appBar: AppBar(
@@ -190,8 +178,8 @@ class _TorrentsState extends State<TorrentsPage>
                   icon: Tooltip(
                     message: 'All',
                     child: Badge(
-                      isLabelVisible: torrents.isNotEmpty,
-                      label: Text(torrents.length.toString()),
+                      isLabelVisible: global.torrents.isNotEmpty,
+                      label: Text(global.torrents.length.toString()),
                       child: const Icon(Icons.filter_list_rounded),
                     ),
                   )),
@@ -258,9 +246,9 @@ class _TorrentsState extends State<TorrentsPage>
                       onChanged: (bool value) {
                         selectAll = !selectAll;
                         if (selectAll) {
-                          selected = [for (var t in filtered) t.hash!];
+                          global.selection = [for (var t in filtered) t.hash!];
                         } else {
-                          selected = [];
+                          global.selection = [];
                         }
                         setState(() {});
                       },
@@ -277,13 +265,13 @@ class _TorrentsState extends State<TorrentsPage>
                 // spacing: 16, // Adjust spacing as needed
                 // runSpacing: 16, // Adjust run spacing as needed
                 children: filtered.map((torrent) {
-                  var isSelected = selected.contains(torrent.hash);
+                  var isSelected = global.selection.contains(torrent.hash);
                   return SizedBox(
                     width: 500,
                     child: InkWell(
                       onDoubleTap: () {
                         actions = true;
-                        select(torrent);
+                        global.selectOrRemove(torrent);
                       },
                       child: SizedBox(
                         width: 100,
@@ -294,7 +282,8 @@ class _TorrentsState extends State<TorrentsPage>
                                 scale: 0.65,
                                 child: Switch(
                                   value: isSelected,
-                                  onChanged: (v) => select(torrent),
+                                  onChanged: (v) =>
+                                      global.selectOrRemove(torrent),
                                 ),
                               ),
                             TorrentCompact(torrent: torrent),
@@ -318,18 +307,22 @@ class _TorrentsState extends State<TorrentsPage>
             child: actions
                 ? Column(
                     children: [
-                      if ((isSelecting && actions) && selected.isNotEmpty)
+                      if ((isSelecting && actions) &&
+                          global.selection.isNotEmpty)
                         ActionsMany(
-                          torrents: torrents
-                              .where((t) => selected.contains(t.hash!))
+                          torrents: global.torrents
+                              .where((t) => global.selection.contains(t.hash!))
                               .toList(),
                         ),
-                      if (isSelecting && actions && selected.length == 1)
+                      if (isSelecting &&
+                          actions &&
+                          global.selection.length == 1)
                         ActionsSolo(
-                          torrent: torrents
-                              .firstWhere((t) => t.hash == selected.first),
+                          torrent: global.torrents.firstWhere(
+                              (t) => t.hash == global.selection.first),
                         ),
-                      if (actions && selected.isEmpty) const ActionsNone(),
+                      if (actions && global.selection.isEmpty)
+                        const ActionsNone(),
                     ],
                   )
                 : const SizedBox.shrink(),

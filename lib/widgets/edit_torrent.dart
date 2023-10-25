@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:magneto/memory.dart';
+import 'package:magneto/models/global.dart';
+import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
 class EditTorrent extends StatefulWidget {
@@ -22,6 +23,8 @@ class _EditTorrentState extends State<EditTorrent> {
 
   @override
   Widget build(BuildContext context) {
+    var global = Provider.of<Global>(context, listen: true);
+    var transmission = global.transmission;
     var torrent = widget.torrent;
 
     return Scaffold(
@@ -34,7 +37,8 @@ class _EditTorrentState extends State<EditTorrent> {
                 DropdownButton<String>(
                   value: location,
                   onChanged: (value) => setState(() => location = value!),
-                  items: directories.map<DropdownMenuItem<String>>((value) {
+                  items:
+                      global.directories.map<DropdownMenuItem<String>>((value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -47,19 +51,19 @@ class _EditTorrentState extends State<EditTorrent> {
                       IconButton(
                         icon: const Icon(Icons.add_circle_rounded),
                         onPressed: () {
-                          setState(() => widget.torrent.trackerList?.add(''));
+                          setState(() => torrent.trackerList?.add(''));
                         },
                       ),
                       SizedBox(
-                        height: widget.torrent.trackerList!.length * 65,
+                        height: torrent.trackerList!.length * 65,
                         width: 300,
                         child: ListView.builder(
-                          itemCount: widget.torrent.trackerList?.length,
+                          itemCount: torrent.trackerList?.length,
                           itemBuilder: (context, index) {
                             return ListTile(
                               title: TextField(
                                 controller: TextEditingController(
-                                    text: widget.torrent.trackerList?[index]),
+                                    text: torrent.trackerList?[index]),
                                 onChanged: (text) {
                                   setState(() => widget
                                       .torrent.trackerList?[index] = text);
@@ -68,8 +72,8 @@ class _EditTorrentState extends State<EditTorrent> {
                               trailing: IconButton(
                                 icon: const Icon(Icons.remove_circle_rounded),
                                 onPressed: () {
-                                  setState(() => widget.torrent.trackerList
-                                      ?.removeAt(index));
+                                  setState(() =>
+                                      torrent.trackerList?.removeAt(index));
                                 },
                               ),
                             );
@@ -93,7 +97,7 @@ class _EditTorrentState extends State<EditTorrent> {
           }
           await transmission.torrent.set(
             ids: ids,
-            trackerList: widget.torrent.trackerList,
+            trackerList: torrent.trackerList,
           );
           if (!mounted) return;
           Navigator.pop(context);

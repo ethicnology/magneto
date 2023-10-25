@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:magneto/memory.dart';
+import 'package:magneto/models/global.dart';
 import 'package:magneto/pages/torrents.dart';
 import 'package:magneto/models/preferences.dart';
-import 'package:magneto/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,6 +20,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    var global = Provider.of<Global>(context, listen: true);
+
     return Scaffold(
       appBar:
           AppBar(title: const Text('Login'), automaticallyImplyLeading: false),
@@ -57,14 +59,14 @@ class _LoginPageState extends State<LoginPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                transmission = Transmission(
+                global.transmission = Transmission(
                   url: host.text,
                   username: username.text,
                   password: password.text,
                 );
 
-                var valid = await testConnection(transmission);
-                if (valid) {
+                var isConnected = await global.test();
+                if (isConnected) {
                   if (isSaveInSharedPreferences) {
                     Preferences.save({
                       'host': host.text,

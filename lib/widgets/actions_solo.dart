@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:magneto/models/global.dart';
 import 'package:magneto/widgets/edit_torrent.dart';
+import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
 class ActionsSolo extends StatefulWidget {
@@ -13,6 +15,8 @@ class ActionsSolo extends StatefulWidget {
 class _ActionsSoloState extends State<ActionsSolo> {
   @override
   Widget build(BuildContext context) {
+    var global = Provider.of<Global>(context, listen: true);
+
     return Card(
       color: Colors.black54,
       child: Column(
@@ -23,6 +27,7 @@ class _ActionsSoloState extends State<ActionsSolo> {
                   context: context,
                   builder: (context) => EditTorrent(torrent: widget.torrent),
                 );
+                global.clearSelection();
               },
               icon: const Icon(Icons.edit_rounded),
               color: Colors.white),

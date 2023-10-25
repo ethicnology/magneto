@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:magneto/memory.dart';
+import 'package:magneto/models/global.dart';
 import 'package:magneto/pages/login.dart';
 import 'package:magneto/pages/torrents.dart';
 import 'package:magneto/models/preferences.dart';
-import 'package:magneto/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
 class SplashPage extends StatefulWidget {
@@ -19,6 +19,8 @@ class _SplashPageState extends State<SplashPage> {
   String password = '';
 
   loadSharedPreferences() async {
+    var global = Provider.of<Global>(context, listen: false);
+
     var map = await Preferences.load();
     if (map.containsKey('username') &&
         map.containsKey('password') &&
@@ -29,14 +31,14 @@ class _SplashPageState extends State<SplashPage> {
     }
 
     if (host.isNotEmpty && username.isNotEmpty && password.isNotEmpty) {
-      transmission = Transmission(
+      global.transmission = Transmission(
         url: host,
         username: username,
         password: password,
       );
 
-      var connection = await testConnection(transmission);
-      if (connection) {
+      var isConnected = await global.test();
+      if (isConnected) {
         if (!mounted) return;
         Navigator.push(
           context,
