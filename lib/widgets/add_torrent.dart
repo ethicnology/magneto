@@ -54,7 +54,7 @@ class _EditTorrentState extends State<AddTorrent> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add torrents'),
+      title: const Text('Add torrents'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -112,9 +112,11 @@ class _EditTorrentState extends State<AddTorrent> {
                 label: const Text('Upload torrents'),
                 icon: const Icon(Icons.file_upload_rounded)),
             if (addedTorrents.isNotEmpty)
-              ListView.builder(
+              SizedBox(
+                width: 200,
+                height: 100,
+                child: ListView.builder(
                   itemCount: addedTorrents.length,
-                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
                     var item = addedTorrents[index];
@@ -143,7 +145,9 @@ class _EditTorrentState extends State<AddTorrent> {
                         ),
                       ),
                     );
-                  }),
+                  },
+                ),
+              ),
           ],
         ),
       ),

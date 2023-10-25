@@ -67,16 +67,20 @@ class _MyWidgetState extends State<ActionsMany> {
                               ],
                             ),
                             SingleChildScrollView(
-                              child: ListView.separated(
-                                  separatorBuilder: (ctx, i) => const Divider(),
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: const EdgeInsets.all(8),
-                                  itemCount: names.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Text(names[index]);
-                                  }),
+                              child: SizedBox(
+                                width: 200,
+                                height: 100,
+                                child: ListView.separated(
+                                    separatorBuilder: (ctx, i) =>
+                                        const Divider(),
+                                    shrinkWrap: true,
+                                    padding: const EdgeInsets.all(8),
+                                    itemCount: names.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Text(names[index]);
+                                    }),
+                              ),
                             ),
                           ],
                         ),
