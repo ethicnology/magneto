@@ -142,209 +142,204 @@ class _TorrentsState extends State<TorrentsPage>
     updateView();
     countTorrentPerStatus();
 
-    if (torrents.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    } else {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Torrents'),
-          automaticallyImplyLeading: false,
-          leadingWidth: 100,
-          leading: Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Torrents'),
+        automaticallyImplyLeading: false,
+        leadingWidth: 100,
+        leading: Row(
+          children: [
+            RotationTransition(
+              turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
+              child: IconButton(
+                  onPressed: refreshTorrents,
+                  icon: const Icon(Icons.refresh_rounded)),
+            ),
+            DropdownButton<int?>(
+              icon: const Icon(Icons.arrow_downward_rounded),
+              value: seconds,
+              items: periods.map((int? value) {
+                return DropdownMenuItem<int>(
+                  value: value,
+                  child: Text(value != null ? '$value s' : 'null'),
+                );
+              }).toList(),
+              onChanged: (value) => setTimer(value),
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Preferences.clear();
+              SystemNavigator.pop(animated: true);
+            },
+            icon: const Icon(Icons.logout_rounded),
+            color: Colors.red,
+          )
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: refreshTorrents,
+        child: Column(children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              RotationTransition(
-                turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-                child: IconButton(
-                    onPressed: refreshTorrents,
-                    icon: const Icon(Icons.refresh_rounded)),
+              IconButton(
+                  onPressed: () => setState(() => status = null),
+                  icon: Tooltip(
+                    message: 'All',
+                    child: Badge(
+                      isLabelVisible: torrents.isNotEmpty,
+                      label: Text(torrents.length.toString()),
+                      child: const Icon(Icons.filter_list_rounded),
+                    ),
+                  )),
+              IconButton(
+                onPressed: () => setState(() => status = Status.seeding),
+                icon: getIcon(Status.seeding, badge: seeding),
               ),
-              DropdownButton<int?>(
-                icon: const Icon(Icons.arrow_downward_rounded),
-                value: seconds,
-                items: periods.map((int? value) {
-                  return DropdownMenuItem<int>(
-                    value: value,
-                    child: Text(value != null ? '$value s' : 'null'),
-                  );
-                }).toList(),
-                onChanged: (value) => setTimer(value),
+              IconButton(
+                onPressed: () => setState(() => status = Status.stopped),
+                icon: getIcon(Status.stopped, badge: stopped),
+              ),
+              IconButton(
+                onPressed: () => setState(() => status = Status.downloading),
+                icon: getIcon(Status.downloading, badge: downloading),
+              ),
+              IconButton(
+                onPressed: () => setState(() => status = Status.verifying),
+                icon: getIcon(Status.verifying, badge: verifying),
+              ),
+              IconButton(
+                onPressed: () => setState(() => status = Status.seedQueued),
+                icon: getIcon(Status.seedQueued, badge: queued, tooltip: false),
               ),
             ],
           ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Preferences.clear();
-                SystemNavigator.pop(animated: true);
-              },
-              icon: const Icon(Icons.logout_rounded),
-              color: Colors.red,
-            )
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: refreshTorrents,
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(
-                    onPressed: () => setState(() => status = null),
-                    icon: Tooltip(
-                      message: 'All',
-                      child: Badge(
-                        isLabelVisible: torrents.isNotEmpty,
-                        label: Text(torrents.length.toString()),
-                        child: const Icon(Icons.filter_list_rounded),
-                      ),
-                    )),
-                IconButton(
-                  onPressed: () => setState(() => status = Status.seeding),
-                  icon: getIcon(Status.seeding, badge: seeding),
-                ),
-                IconButton(
-                  onPressed: () => setState(() => status = Status.stopped),
-                  icon: getIcon(Status.stopped, badge: stopped),
-                ),
-                IconButton(
-                  onPressed: () => setState(() => status = Status.downloading),
-                  icon: getIcon(Status.downloading, badge: downloading),
-                ),
-                IconButton(
-                  onPressed: () => setState(() => status = Status.verifying),
-                  icon: getIcon(Status.verifying, badge: verifying),
-                ),
-                IconButton(
-                  onPressed: () => setState(() => status = Status.seedQueued),
-                  icon:
-                      getIcon(Status.seedQueued, badge: queued, tooltip: false),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Search',
-                      prefixIcon: Icon(Icons.search_rounded),
-                    ),
-                    onChanged: (value) => setState(() => name = value),
+          Row(
+            children: [
+              Flexible(
+                flex: 3,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Search',
+                    prefixIcon: Icon(Icons.search_rounded),
                   ),
+                  onChanged: (value) => setState(() => name = value),
                 ),
-                Flexible(
-                    flex: 2,
-                    child: Row(
-                      children: [
-                        Transform.scale(
-                          scale: 0.65,
-                          child: Switch(
-                              value: recentlyActive,
-                              onChanged: (a) =>
-                                  setState(() => recentlyActive = a)),
-                        ),
-                        const Text('Active'),
-                      ],
-                    )),
-              ],
+              ),
+              Flexible(
+                  flex: 2,
+                  child: Row(
+                    children: [
+                      Transform.scale(
+                        scale: 0.65,
+                        child: Switch(
+                            value: recentlyActive,
+                            onChanged: (a) =>
+                                setState(() => recentlyActive = a)),
+                      ),
+                      const Text('Active'),
+                    ],
+                  )),
+            ],
+          ),
+          if (isSelecting)
+            Card(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Transform.scale(
+                    scale: 0.65,
+                    child: Switch(
+                      value: selectAll,
+                      activeColor: Colors.redAccent,
+                      onChanged: (bool value) {
+                        selectAll = !selectAll;
+                        if (selectAll) {
+                          selected = [for (var t in filtered) t.hash!];
+                        } else {
+                          selected = [];
+                        }
+                        setState(() {});
+                      },
+                    ),
+                  ),
+                  const Text('All')
+                ],
+              ),
             ),
-            if (isSelecting)
-              Card(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Transform.scale(
-                      scale: 0.65,
-                      child: Switch(
-                        value: selectAll,
-                        activeColor: Colors.redAccent,
-                        onChanged: (bool value) {
-                          selectAll = !selectAll;
-                          if (selectAll) {
-                            selected = [for (var t in filtered) t.hash!];
-                          } else {
-                            selected = [];
-                          }
-                          setState(() {});
-                        },
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Wrap(
+                // spacing: 16, // Adjust spacing as needed
+                // runSpacing: 16, // Adjust run spacing as needed
+                children: filtered.map((torrent) {
+                  var isSelected = selected.contains(torrent.hash);
+                  return SizedBox(
+                    width: 500,
+                    child: InkWell(
+                      onDoubleTap: () {
+                        actions = true;
+                        select(torrent);
+                      },
+                      child: SizedBox(
+                        width: 100,
+                        child: Row(
+                          children: [
+                            if (isSelecting && isSelected)
+                              Transform.scale(
+                                scale: 0.65,
+                                child: Switch(
+                                  value: isSelected,
+                                  onChanged: (v) => select(torrent),
+                                ),
+                              ),
+                            TorrentCompact(torrent: torrent),
+                          ],
+                        ),
                       ),
                     ),
-                    const Text('All')
-                  ],
-                ),
+                  );
+                }).toList(),
               ),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Wrap(
-                  // spacing: 16, // Adjust spacing as needed
-                  // runSpacing: 16, // Adjust run spacing as needed
-                  children: filtered.map((torrent) {
-                    var isSelected = selected.contains(torrent.hash);
-                    return SizedBox(
-                      width: 500,
-                      child: InkWell(
-                        onDoubleTap: () {
-                          actions = true;
-                          select(torrent);
-                        },
-                        child: SizedBox(
-                          width: 100,
-                          child: Row(
-                            children: [
-                              if (isSelecting && isSelected)
-                                Transform.scale(
-                                  scale: 0.65,
-                                  child: Switch(
-                                    value: isSelected,
-                                    onChanged: (v) => select(torrent),
-                                  ),
-                                ),
-                              TorrentCompact(torrent: torrent),
-                            ],
-                          ),
+            ),
+          ),
+        ]),
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          AnimatedOpacity(
+            opacity: actions ? 1 : 0,
+            duration: const Duration(seconds: 1),
+            child: actions
+                ? Column(
+                    children: [
+                      if ((isSelecting && actions) && selected.isNotEmpty)
+                        ActionsMany(
+                          torrents: torrents
+                              .where((t) => selected.contains(t.hash!))
+                              .toList(),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ]),
-        ),
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            AnimatedOpacity(
-              opacity: actions ? 1 : 0,
-              duration: const Duration(seconds: 1),
-              child: actions
-                  ? Column(
-                      children: [
-                        if ((isSelecting && actions) && selected.isNotEmpty)
-                          ActionsMany(
-                            torrents: torrents
-                                .where((t) => selected.contains(t.hash!))
-                                .toList(),
-                          ),
-                        if (isSelecting && actions && selected.length == 1)
-                          ActionsSolo(
-                            torrent: torrents
-                                .firstWhere((t) => t.hash == selected.first),
-                          ),
-                        if (actions && selected.isEmpty) const ActionsNone(),
-                      ],
-                    )
-                  : const SizedBox.shrink(),
-            ),
-            FloatingActionButton.small(
-              onPressed: () => setState(() => actions = !actions),
-              child: const Icon(Icons.apps_rounded),
-            ),
-          ],
-        ),
-      );
-    }
+                      if (isSelecting && actions && selected.length == 1)
+                        ActionsSolo(
+                          torrent: torrents
+                              .firstWhere((t) => t.hash == selected.first),
+                        ),
+                      if (actions && selected.isEmpty) const ActionsNone(),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+          FloatingActionButton.small(
+            onPressed: () => setState(() => actions = !actions),
+            child: const Icon(Icons.apps_rounded),
+          ),
+        ],
+      ),
+    );
   }
 }
