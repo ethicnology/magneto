@@ -23,7 +23,7 @@ class _ActionsSoloState extends State<ActionsSolo> {
         children: [
           IconButton(
               onPressed: () {
-                showModalBottomSheet(
+                showDialog(
                   context: context,
                   builder: (context) => EditTorrent(torrent: widget.torrent),
                 );

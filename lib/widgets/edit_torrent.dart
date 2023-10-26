@@ -12,7 +12,6 @@ class EditTorrent extends StatefulWidget {
 }
 
 class _EditTorrentState extends State<EditTorrent> {
-  final _formKey = GlobalKey<FormState>();
   String? location;
 
   @override
@@ -27,82 +26,95 @@ class _EditTorrentState extends State<EditTorrent> {
     var transmission = global.transmission;
     var torrent = widget.torrent;
 
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                DropdownButton<String>(
-                  value: location,
-                  onChanged: (value) => setState(() => location = value!),
-                  items:
-                      global.directories.map<DropdownMenuItem<String>>((value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-                Card(
-                  child: Column(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.add_circle_rounded),
-                        onPressed: () {
-                          setState(() => torrent.trackerList?.add(''));
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          const Text('Edit torrents'),
+          FloatingActionButton.small(
+            onPressed: () async {
+              var ids = [torrent.hash!];
+              if (location != torrent.downloadDir) {
+                transmission.torrent
+                    .move(ids: ids, location: location!, move: true);
+              }
+              await transmission.torrent.set(
+                ids: ids,
+                trackerList: torrent.trackerList,
+              );
+              if (!mounted) return;
+              Navigator.pop(context);
+            },
+            child: const Icon(Icons.save_rounded),
+          ),
+        ],
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              width: 200,
+              child: DropdownButton<String>(
+                value: location,
+                isExpanded: true,
+                onChanged: (value) => setState(() => location = value!),
+                items:
+                    global.directories.map<DropdownMenuItem<String>>((value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
+            SizedBox(
+              width: 200,
+              child: Card(
+                child: Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_rounded),
+                      onPressed: () {
+                        setState(() => torrent.trackerList?.add(''));
+                      },
+                    ),
+                    SizedBox(
+                      width: double.maxFinite,
+                      height: torrent.trackerList!.length * 65,
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: torrent.trackerList?.length,
+                        itemBuilder: (context, index) {
+                          return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: TextEditingController(
+                                        text: torrent.trackerList?[index]),
+                                    onChanged: (text) {
+                                      setState(() => widget
+                                          .torrent.trackerList?[index] = text);
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_rounded),
+                                  onPressed: () {
+                                    setState(() =>
+                                        torrent.trackerList?.removeAt(index));
+                                  },
+                                ),
+                              ]);
                         },
                       ),
-                      SizedBox(
-                        height: torrent.trackerList!.length * 65,
-                        width: 300,
-                        child: ListView.builder(
-                          itemCount: torrent.trackerList?.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: TextField(
-                                controller: TextEditingController(
-                                    text: torrent.trackerList?[index]),
-                                onChanged: (text) {
-                                  setState(() => widget
-                                      .torrent.trackerList?[index] = text);
-                                },
-                              ),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.remove_circle_rounded),
-                                onPressed: () {
-                                  setState(() =>
-                                      torrent.trackerList?.removeAt(index));
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          var ids = [torrent.hash!];
-          if (location != torrent.downloadDir) {
-            transmission.torrent
-                .move(ids: ids, location: location!, move: true);
-          }
-          await transmission.torrent.set(
-            ids: ids,
-            trackerList: torrent.trackerList,
-          );
-          if (!mounted) return;
-          Navigator.pop(context);
-        },
-        child: const Icon(Icons.save_rounded),
       ),
     );
   }

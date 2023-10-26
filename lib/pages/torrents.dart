@@ -58,6 +58,17 @@ class _TorrentsState extends State<TorrentsPage>
       status == Status.verifyQueued ||
       status == Status.downloadQueued;
 
+  selectionAll() {
+    var global = Provider.of<Global>(context, listen: false);
+    selectAll = !selectAll;
+    if (selectAll) {
+      global.selection = [for (var t in filtered) t.hash!];
+    } else {
+      global.selection = [];
+    }
+    setState(() {});
+  }
+
   updateView(List<Torrent> torrents, List<String> selection) {
     isSelecting = selection.isNotEmpty;
     if (status == null) filtered = torrents;
@@ -212,8 +223,7 @@ class _TorrentsState extends State<TorrentsPage>
           ),
           Row(
             children: [
-              Flexible(
-                flex: 3,
+              Expanded(
                 child: TextField(
                   decoration: const InputDecoration(
                     labelText: 'Search',
@@ -222,8 +232,10 @@ class _TorrentsState extends State<TorrentsPage>
                   onChanged: (value) => setState(() => name = value),
                 ),
               ),
-              Flexible(
-                  flex: 2,
+              Padding(
+                padding: const EdgeInsets.only(left: 5, right: 25, top: 10),
+                child: InkWell(
+                  onTap: () => setState(() => recentlyActive = !recentlyActive),
                   child: Row(
                     children: [
                       Transform.scale(
@@ -235,32 +247,30 @@ class _TorrentsState extends State<TorrentsPage>
                       ),
                       const Text('Active'),
                     ],
-                  )),
+                  ),
+                ),
+              ),
             ],
           ),
           if (isSelecting)
-            Card(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Transform.scale(
-                    scale: 0.65,
-                    child: Switch(
-                      value: selectAll,
-                      activeColor: Colors.redAccent,
-                      onChanged: (bool value) {
-                        selectAll = !selectAll;
-                        if (selectAll) {
-                          global.selection = [for (var t in filtered) t.hash!];
-                        } else {
-                          global.selection = [];
-                        }
-                        setState(() {});
-                      },
+            InkWell(
+              onTap: () => selectionAll(),
+              child: SizedBox(
+                width: 90,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Transform.scale(
+                      scale: 0.65,
+                      child: Switch(
+                        value: selectAll,
+                        activeColor: Colors.redAccent,
+                        onChanged: (v) => selectionAll(),
+                      ),
                     ),
-                  ),
-                  const Text('All')
-                ],
+                    const Text('All')
+                  ],
+                ),
               ),
             ),
           Expanded(

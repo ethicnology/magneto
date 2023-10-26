@@ -13,7 +13,7 @@ class ActionsMany extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<ActionsMany> {
-  bool removeLocalData = false;
+  bool localData = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,33 +75,35 @@ class _MyWidgetState extends State<ActionsMany> {
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Checkbox(
-                                  value: removeLocalData,
-                                  onChanged: (v) {
-                                    setState(() =>
-                                        removeLocalData = !removeLocalData);
-                                  },
-                                ),
-                                const Text('Delete Local Data'),
-                              ],
-                            ),
-                            SingleChildScrollView(
-                              child: SizedBox(
-                                width: 200,
-                                height: 100,
-                                child: ListView.separated(
-                                    separatorBuilder: (ctx, i) =>
-                                        const Divider(),
-                                    shrinkWrap: true,
-                                    padding: const EdgeInsets.all(8),
-                                    itemCount: names.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Text(names[index]);
-                                    }),
+                            InkWell(
+                              onTap: () =>
+                                  setState(() => localData = !localData),
+                              child: Row(
+                                children: <Widget>[
+                                  Transform.scale(
+                                    scale: 0.6,
+                                    child: Switch(
+                                      value: localData,
+                                      onChanged: (v) => setState(
+                                          () => localData = !localData),
+                                    ),
+                                  ),
+                                  const Text('Delete Local Data'),
+                                ],
                               ),
+                            ),
+                            SizedBox(
+                              width: 200,
+                              height: 100,
+                              child: ListView.separated(
+                                  separatorBuilder: (ctx, i) => const Divider(),
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.all(8),
+                                  itemCount: names.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Text(names[index]);
+                                  }),
                             ),
                           ],
                         ),
@@ -113,7 +115,7 @@ class _MyWidgetState extends State<ActionsMany> {
                           TextButton(
                             onPressed: () {
                               onPressed(transmission.torrent.remove(
-                                  ids: ids, deleteLocalData: removeLocalData));
+                                  ids: ids, deleteLocalData: localData));
                               Navigator.of(context).pop();
                             },
                             child: Text('Remove ${ids.length}'),
