@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Transform.scale(
-                  scale: 0.60,
+                  scale: 0.6,
                   child: Switch(
                     value: isSaveInSharedPreferences,
                     onChanged: (newValue) {

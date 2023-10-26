@@ -71,7 +71,7 @@ class _EditTorrentState extends State<AddTorrent> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Transform.scale(
-                      scale: 0.65,
+                      scale: 0.6,
                       child: Switch(
                           value: isLeech,
                           onChanged: (a) => setState(() => isLeech = !isLeech)),

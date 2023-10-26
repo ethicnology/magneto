@@ -239,7 +239,7 @@ class _TorrentsState extends State<TorrentsPage>
                   child: Row(
                     children: [
                       Transform.scale(
-                        scale: 0.65,
+                        scale: 0.6,
                         child: Switch(
                             value: recentlyActive,
                             onChanged: (a) =>
@@ -261,7 +261,7 @@ class _TorrentsState extends State<TorrentsPage>
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Transform.scale(
-                      scale: 0.65,
+                      scale: 0.6,
                       child: Switch(
                         value: selectAll,
                         activeColor: Colors.redAccent,
@@ -294,7 +294,7 @@ class _TorrentsState extends State<TorrentsPage>
                           children: [
                             if (isSelecting && isSelected)
                               Transform.scale(
-                                scale: 0.65,
+                                scale: 0.6,
                                 child: Switch(
                                   value: isSelected,
                                   onChanged: (v) =>
