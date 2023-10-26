@@ -61,6 +61,7 @@ class _TorrentsState extends State<TorrentsPage>
   selectionAll() {
     var global = Provider.of<Global>(context, listen: false);
     selectAll = !selectAll;
+    actions = selectAll;
     if (selectAll) {
       global.selection = [for (var t in filtered) t.hash!];
     } else {
@@ -277,15 +278,13 @@ class _TorrentsState extends State<TorrentsPage>
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Wrap(
-                // spacing: 16, // Adjust spacing as needed
-                // runSpacing: 16, // Adjust run spacing as needed
                 children: filtered.map((torrent) {
                   var isSelected = global.selection.contains(torrent.hash);
                   return SizedBox(
                     width: 500,
                     child: InkWell(
                       onDoubleTap: () {
-                        actions = true;
+                        actions = !actions;
                         global.selectOrRemove(torrent);
                       },
                       child: SizedBox(
