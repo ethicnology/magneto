@@ -1,0 +1,112 @@
+name: crossplatform
+on:
+  push:
+    branches:
+      - main
+env:
+  APP_NAME: magneto
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: |
+            sudo apt-get update -y
+            sudo apt-get install -y ninja-build libgtk-3-dev
+      - run: flutter config --enable-linux-desktop
+      - run: flutter build linux --release
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux_x64_${{ env.APP_NAME }}
+          path: build/linux/x64/release/bundle
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - run: flutter build appbundle --release
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: android_${{ env.APP_NAME }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'beta'
+      - run: flutter config --enable-windows-desktop
+      - run: flutter build windows --release
+      - name: Upload artifact 
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows_x64_${{ env.APP_NAME }}
+          path: build\windows\x64\runner\Release
+
+  ios:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+    - run: flutter pub get
+    - name: Build no-codesign release
+      run: flutter build ios --release --no-codesign
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ios_${{ env.APP_NAME }}
+        path: build/ios/iphoneos/Runner.app
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+      - run: flutter config --enable-macos-desktop
+      - run: flutter build macos --release
+      - name: Create DMG
+        run: |
+          hdiutil create -format UDZO -srcfolder build/macos/Build/Products/Release/${{ env.APP_NAME }}.app build/macos/${{ env.APP_NAME }}.dmg
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos_${{ env.APP_NAME }}
+          path: build/macos/${{ env.APP_NAME }}.dmg
+
+  # macos_arm:
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: subosito/flutter-action@v2
+  #       with:
+  #         channel: 'stable'
+  #         architecture: arm64
+  #     - run: flutter config --enable-macos-desktop
+  #     - run: flutter build macos --release
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: macos_arm64_${{ env.APP_NAME }}
+  #         path: build/macos/Build/Products/Release/${{ env.APP_NAME }}.app/Contents

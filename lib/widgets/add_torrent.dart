@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:freeleech/freeleech.dart';
+// import 'package:freeleech/freeleech.dart';
 import 'package:magneto/models/global.dart';
 import 'package:provider/provider.dart';
 
@@ -111,11 +111,11 @@ class _EditTorrentState extends State<AddTorrent> {
                         print(e);
                       }
                     }
-                    var ids = [
-                      for (var t in addedTorrents)
-                        if (t.$2.isNotEmpty) t.$2
-                    ];
-                    if (isLeech) freeleech(global.transmission, ids);
+                    // var ids = [
+                    //   for (var t in addedTorrents)
+                    //     if (t.$2.isNotEmpty) t.$2
+                    // ];
+                    // if (isLeech) freeleech(global.transmission, ids);
                     setState(() {});
                   }
                 },
