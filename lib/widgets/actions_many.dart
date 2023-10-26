@@ -35,21 +35,33 @@ class _MyWidgetState extends State<ActionsMany> {
         children: [
           IconButton(
             onPressed: () => onPressed(transmission.torrent.start(ids: ids)),
-            icon: const Icon(Icons.play_circle_rounded),
+            icon: const Tooltip(
+              message: 'Start',
+              child: Icon(Icons.play_circle_rounded),
+            ),
             color: Colors.green,
           ),
           IconButton(
               onPressed: () => onPressed(transmission.torrent.stop(ids: ids)),
-              icon: getIcon(Status.stopped, tooltip: false),
+              icon: Tooltip(
+                message: 'Stop',
+                child: getIcon(Status.stopped, tooltip: false),
+              ),
               color: Colors.amber),
           IconButton(
               onPressed: () => onPressed(transmission.torrent.verify(ids: ids)),
-              icon: const Icon(Icons.verified_rounded),
+              icon: const Tooltip(
+                message: 'Verify',
+                child: Icon(Icons.verified_rounded),
+              ),
               color: Colors.purpleAccent),
           IconButton(
               onPressed: () =>
                   onPressed(transmission.torrent.reannounce(ids: ids)),
-              icon: const Icon(Icons.campaign_rounded),
+              icon: const Tooltip(
+                message: 'Announce',
+                child: Icon(Icons.campaign_rounded),
+              ),
               color: Colors.teal),
           IconButton(
             onPressed: () {
@@ -113,7 +125,10 @@ class _MyWidgetState extends State<ActionsMany> {
                 },
               );
             },
-            icon: const Icon(Icons.remove_circle_rounded),
+            icon: const Tooltip(
+              message: 'Remove',
+              child: Icon(Icons.remove_circle_rounded),
+            ),
             color: Colors.redAccent,
           )
         ],

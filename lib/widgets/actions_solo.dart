@@ -29,7 +29,10 @@ class _ActionsSoloState extends State<ActionsSolo> {
                 );
                 global.clearSelection();
               },
-              icon: const Icon(Icons.edit_rounded),
+              icon: const Tooltip(
+                message: 'Edit',
+                child: Icon(Icons.edit_rounded),
+              ),
               color: Colors.white),
         ],
       ),

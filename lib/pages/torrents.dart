@@ -140,8 +140,10 @@ class _TorrentsState extends State<TorrentsPage>
             RotationTransition(
               turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
               child: IconButton(
-                  onPressed: refreshTorrents,
-                  icon: const Icon(Icons.refresh_rounded)),
+                onPressed: refreshTorrents,
+                icon: const Tooltip(
+                    message: 'Refresh', child: Icon(Icons.refresh_rounded)),
+              ),
             ),
             DropdownButton<int?>(
               icon: const Icon(Icons.arrow_downward_rounded),
@@ -162,7 +164,10 @@ class _TorrentsState extends State<TorrentsPage>
               Preferences.clear();
               SystemNavigator.pop(animated: true);
             },
-            icon: const Icon(Icons.logout_rounded),
+            icon: const Tooltip(
+              message: 'Logout',
+              child: Icon(Icons.logout_rounded),
+            ),
             color: Colors.red,
           )
         ],
