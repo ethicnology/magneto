@@ -47,7 +47,7 @@ class _TorrentsState extends State<TorrentsPage>
     if (!mounted) return;
     if (isConnected == false) Navigator.pop(context);
 
-    global.refresh();
+    global.refresh(recentlyActive: recentlyActive);
     filtered = global.torrents;
 
     setState(() {});
@@ -61,7 +61,6 @@ class _TorrentsState extends State<TorrentsPage>
   selectionAll() {
     var global = Provider.of<Global>(context, listen: false);
     selectAll = !selectAll;
-    actions = selectAll;
     if (selectAll) {
       global.selection = [for (var t in filtered) t.hash!];
     } else {
@@ -284,7 +283,7 @@ class _TorrentsState extends State<TorrentsPage>
                     width: 500,
                     child: InkWell(
                       onDoubleTap: () {
-                        actions = !actions;
+                        if (actions == false) actions = true;
                         global.selectOrRemove(torrent);
                       },
                       child: SizedBox(
@@ -335,8 +334,7 @@ class _TorrentsState extends State<TorrentsPage>
                           torrent: global.torrents.firstWhere(
                               (t) => t.hash == global.selection.first),
                         ),
-                      if (actions && global.selection.isEmpty)
-                        const ActionsNone(),
+                      if (actions && !isSelecting) const ActionsNone(),
                     ],
                   )
                 : const SizedBox.shrink(),
