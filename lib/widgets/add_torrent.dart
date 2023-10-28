@@ -63,25 +63,26 @@ class _EditTorrentState extends State<AddTorrent> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             if (_isLoading) const CircularProgressIndicator(),
-            InkWell(
-              onTap: () => setState(() => isLeech = !isLeech),
-              child: SizedBox(
-                width: 150,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Transform.scale(
-                      scale: 0.6,
-                      child: Switch(
-                          value: isLeech,
-                          onChanged: (a) => setState(() => isLeech = !isLeech)),
-                    ),
-                    const Text('Freeleech',
-                        overflow: TextOverflow.ellipsis, maxLines: 1),
-                  ],
-                ),
-              ),
-            ),
+            // TODO: renable freeleeching using private repository in Github Actions
+            // InkWell(
+            //   onTap: () => setState(() => isLeech = !isLeech),
+            //   child: SizedBox(
+            //     width: 150,
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //       children: [
+            //         Transform.scale(
+            //           scale: 0.6,
+            //           child: Switch(
+            //               value: isLeech,
+            //               onChanged: (a) => setState(() => isLeech = !isLeech)),
+            //         ),
+            //         const Text('Freeleech',
+            //             overflow: TextOverflow.ellipsis, maxLines: 1),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             SizedBox(
               width: 150,
               child: DropdownButton<String>(
