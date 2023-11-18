@@ -3,6 +3,7 @@ import 'package:magneto/models/global.dart';
 import 'package:magneto/pages/login.dart';
 import 'package:magneto/pages/torrents.dart';
 import 'package:magneto/models/preferences.dart';
+import 'package:magneto/version.dart';
 import 'package:provider/provider.dart';
 import 'package:transmission/transmission.dart';
 
@@ -17,6 +18,12 @@ class _SplashPageState extends State<SplashPage> {
   String host = '';
   String username = '';
   String password = '';
+
+  checkNewVersion() async {
+    var newVersion = await hasNewVersion();
+    if (!mounted) return;
+    if (newVersion.isNotEmpty) showVersionOverlay(context);
+  }
 
   loadSharedPreferences() async {
     var global = Provider.of<Global>(context, listen: false);
@@ -70,6 +77,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     loadSharedPreferences();
+    checkNewVersion();
     super.initState();
   }
 
