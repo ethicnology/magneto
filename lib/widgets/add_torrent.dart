@@ -84,7 +84,7 @@ class _EditTorrentState extends State<AddTorrent> {
             //   ),
             // ),
             SizedBox(
-              width: 150,
+              width: 200,
               child: DropdownButton<String>(
                 isExpanded: true,
                 value: downloadDir,
@@ -92,8 +92,53 @@ class _EditTorrentState extends State<AddTorrent> {
                 items:
                     global.directories.map<DropdownMenuItem<String>>((value) {
                   return DropdownMenuItem<String>(
-                      value: value, child: Text(value));
+                    value: value,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        const Icon(Icons.folder_rounded),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                            width: 135,
+                            child:
+                                Text(value, overflow: TextOverflow.ellipsis)),
+                      ],
+                    ),
+                  );
                 }).toList(),
+              ),
+            ),
+            SizedBox(
+              width: 200,
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Magnet Link',
+                  prefixIcon: Icon(Icons.bolt_rounded),
+                ),
+                onChanged: (value) async {
+                  RegExp magnetRegex =
+                      RegExp(r'magnet:\?xt=urn:btih:[a-fA-F0-9]+&dn=([^&]+)');
+
+                  Match? match = magnetRegex.firstMatch(value);
+                  if (match != null) {
+                    var magnetDn = match.group(1)!;
+                    String magnetName = Uri.decodeComponent(magnetDn);
+                    print('The magnet name is: $magnetName');
+                    try {
+                      var added = await global.transmission.torrent.add(
+                        filename: value,
+                        downloadDir: downloadDir,
+                      );
+                      addedTorrents.add((magnetName, added.hash!));
+                    } catch (e) {
+                      addedTorrents.add((magnetName, ''));
+                      print(e);
+                    }
+                  } else {
+                    print('No match found for the pattern.');
+                  }
+                  setState(() {});
+                },
               ),
             ),
             ElevatedButton.icon(
@@ -120,7 +165,7 @@ class _EditTorrentState extends State<AddTorrent> {
                     setState(() {});
                   }
                 },
-                label: const Text('Upload torrents'),
+                label: const Text('Torrents files'),
                 icon: const Icon(Icons.file_upload_rounded)),
             if (addedTorrents.isNotEmpty)
               SizedBox(
